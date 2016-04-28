@@ -4,6 +4,7 @@
 log.txt
 README
 examples/
+build/
 *.o
 *.so
 *debug

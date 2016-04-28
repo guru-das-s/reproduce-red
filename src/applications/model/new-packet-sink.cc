@@ -209,10 +209,11 @@ void NewPacketSink::HandleRead (Ptr<Socket> socket)
 
       uint8_t* packet_contents = (uint8_t *) malloc(sizeof(uint8_t) * 5);
       uint8_t* opcode = (uint8_t *) malloc(sizeof(uint8_t));
+
       /* Read opcode*/
       packet->CopyData(opcode, 1);
-
       printf("Sink: Opcode is %d\n", *opcode);
+
       switch(*opcode){
         case 0: // Ignore
                 NS_LOG_INFO("Received Opcode: 0");
@@ -222,7 +223,7 @@ void NewPacketSink::HandleRead (Ptr<Socket> socket)
                 packet->CopyData(packet_contents, 5);
                 uint32_t response_size = convert_uint8_uint32(packet_contents);
                 NS_LOG_INFO("Read response size: "<<response_size);
-		printf("SInk: resp size is %u\n", response_size);
+                printf("Sink: resp size is %u\n", response_size);
                 break;
       }
 
