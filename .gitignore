@@ -3,8 +3,12 @@
 .lock*
 log.txt
 README
-doc/
 examples/
 *.o
 *.so
 *debug
+*.pdf
+*.png
+*.dia
+*.rst
+doc/manual/
