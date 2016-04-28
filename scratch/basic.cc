@@ -46,6 +46,8 @@ int main (int argc, char *argv[])
   NewSendHelper sender("ns3::TcpSocketFactory",
                          InetSocketAddress (p2pInterfaces1.GetAddress(1), port));
   ApplicationContainer sourceApps = sender.Install (p2pNodes1.Get(0));
+  sinkApps.Start(Seconds(0));
+  sinkApps.Stop(Seconds(10));
   sourceApps.Start(Seconds(0));
   sourceApps.Stop(Seconds (10));
 

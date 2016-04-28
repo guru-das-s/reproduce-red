@@ -120,6 +120,8 @@ private:
   TypeId          m_tid;          //!< The type of protocol to use.
   uint32_t        resp_size;      // Response should be of ths size
   uint32_t        response_bytes; // Total bytes of response received so far
+  bool            request_complete;
+  Address         m_local;        //!< Local address to bind to
 
   /// Traced Callback: sent packets
   TracedCallback<Ptr<const Packet> > m_txTrace;
@@ -138,7 +140,7 @@ private:
   /**
    * \brief Send more data as soon as some has been transmitted.
    */
-  void DataSend (Ptr<Socket>, uint32_t); // for socket's SetSendCallback
+  // void DataSend (Ptr<Socket>, uint32_t); // for socket's SetSendCallback
   void HandleRead (Ptr<Socket> socket);  // for socket's receive callback
 };
 

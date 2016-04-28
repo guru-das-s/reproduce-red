@@ -81,6 +81,7 @@ NewSendApplication::NewSendApplication ()
 {
   NS_LOG_FUNCTION (this);
   response_bytes = 0;
+  request_complete = false;
 }
 
 NewSendApplication::~NewSendApplication ()
@@ -133,21 +134,23 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
 
       if (Inet6SocketAddress::IsMatchingType (m_peer))
         {
-          m_socket->Bind6 ();
+          m_socket->Bind6 (m_local);
         }
       else if (InetSocketAddress::IsMatchingType (m_peer))
         {
-          m_socket->Bind ();
+          m_socket->Bind (m_local);
         }
 
       m_socket->Connect (m_peer);
-      // m_socket->ShutdownRecv ();
+      m_socket->ShutdownRecv ();
       m_socket->SetConnectCallback (
         MakeCallback (&NewSendApplication::ConnectionSucceeded, this),
         MakeCallback (&NewSendApplication::ConnectionFailed, this));
       // m_socket->SetSendCallback (
       //   MakeCallback (&NewSendApplication::DataSend, this));
-      m_socket->SetRecvCallback (MakeCallback (&NewSendApplication::HandleRead, this));
+      // m_socket->SetAcceptCallback (MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
+        // MakeCallback (&NewPacketSink::HandleAccept, this));
+      // m_socket->SetRecvCallback (MakeCallback (&NewSendApplication::HandleRead, this));
       //Need to add receive callback here. Increments the response_bytes counter. Once we receive resp_size amount of data, the application will send the secondary reqs
     }
   if (m_connected)
@@ -211,6 +214,12 @@ void NewSendApplication::SendData (void)
     toSend = request_size;
   }
 
+  // Create sink at current port + 1
+  PacketSinkHelper sink ("ns3::TcpSocketFactory",
+                           InetSocketAddress (Ipv4Address::GetAny (), port+1));
+  ApplicationContainer sinkApps = sink.Install (GetNode());
+  sinkApps.Start(Simulator::Now());
+
   // First packet contains opcode 1,resp_size (total 5 bytes)
   printf("SendApp: Sending request for %d bytes with opcode 1\n", (int) resp_size);
   create_packet_payload(resp_size, opcode, buffer, toSend);
@@ -233,9 +242,9 @@ void NewSendApplication::SendData (void)
         }
       NS_LOG_LOGIC ("sending packet at " << Simulator::Now ());
       Ptr<Packet> packet = Create<Packet> (toSend);
-      m_txTrace (packet);
-      printf("SendApp: Sending 1 more packet. %d bytes sent so far \n", (int) m_totBytes);
+      m_txTrace (packet);     
       int actual = m_socket->Send (packet);
+      printf("SendApp: Sending 1 more packet. %d bytes sent so far \n", (int) m_totBytes);
       if (actual > 0)
         {
           m_totBytes += actual;
@@ -248,6 +257,8 @@ void NewSendApplication::SendData (void)
           break;
         }
     }
+    request_complete = true;
+    
   // Loop till we receive the full primary response. The response_bytes counter is incremented by the recv callback
    // while(response_bytes < resp_size) {}
 
@@ -282,7 +293,9 @@ void NewSendApplication::ConnectionSucceeded (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
   NS_LOG_LOGIC ("NewSendApplication Connection succeeded");
   m_connected = true;
-  SendData ();
+  if(!request_complete){
+    SendData ();
+  }  
 }
 
 void NewSendApplication::ConnectionFailed (Ptr<Socket> socket)
