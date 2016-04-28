@@ -1,0 +1,998 @@
+# project ns (3.24.1) configured on Sun Jan 31 10:38:16 2016 by
+# waf 1.8.12 (abi 98, python 20606f0 on linux2)
+# using waf configure --enable-examples --enable-tests --with-pybindgen ../pybindgen-0.17.0.post41+ngd10fa60
+#
+----------------------------------------
+Setting top to
+/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1
+----------------------------------------
+Setting out to
+/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build
+----------------------------------------
+Checking for 'gcc' (C compiler)
+find program=['gcc', 'cc'] paths=['/usr/lib64/qt-3.3/bin', '/usr/local/bin', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='CC' -> ['/usr/bin/gcc']
+find program=['ar'] paths=['/usr/lib64/qt-3.3/bin', '/usr/local/bin', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='AR' -> ['/usr/bin/ar']
+/usr/bin/gcc
+----------------------------------------
+Checking for cc version
+4.4.7
+----------------------------------------
+Checking for 'g++' (C++ compiler)
+find program=['g++', 'c++'] paths=['/usr/lib64/qt-3.3/bin', '/usr/local/bin', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='CXX' -> ['/usr/bin/g++']
+(tool ar is already loaded, skipping)
+/usr/bin/g++
+------------------------------------------------------
+Checking for compilation flag -Wl,--soname=foo support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_e58c487c663196ad4da0dc7170b0bd98/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wl,--soname=foo', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_e58c487c663196ad4da0dc7170b0bd98/testbuild/test.cpp.1.o']
+ok
+------------------------------------------------------
+Checking for program 'python'
+/usr/bin/python
+find program=['python'] paths=['/usr/lib64/qt-3.3/bin', '/usr/local/bin', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='PYTHON' -> ['/usr/bin/python']
+['/usr/bin/python', '-c', 'import imp;print(imp.get_tag())']
+err: Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+AttributeError: 'module' object has no attribute 'get_tag'
+
+['/usr/bin/python', '-c', 'import sys\nfor x in sys.version_info: print(str(x))']
+out: 2
+6
+6
+final
+0
+
+['/usr/bin/python', '-c', "from distutils.sysconfig import get_config_var, get_python_lib\n\nprint(repr(get_python_lib(standard_lib=0, prefix='/usr/local') or ''))"]
+out: '/usr/local/lib/python2.6/site-packages'
+
+'/usr/local/lib/python2.6/site-packages'
+
+['/usr/bin/python', '-c', "from distutils.sysconfig import get_config_var, get_python_lib\n\nprint(repr(get_python_lib(plat_specific=1, standard_lib=0, prefix='/usr/local') or ''))"]
+out: '/usr/local/lib64/python2.6/site-packages'
+
+'/usr/local/lib64/python2.6/site-packages'
+
+------------------------------------------------------
+Checking for python version
+(2, 6, 6, 'final', 0)
+['/usr/bin/python', '-c', "from distutils.sysconfig import get_config_var, get_python_lib\n\nprint(repr(get_config_var('prefix') or ''))\nprint(repr(get_config_var('SO') or ''))\nprint(repr(get_config_var('LDFLAGS') or ''))\nprint(repr(get_config_var('LIBDIR') or ''))\nprint(repr(get_config_var('LIBPL') or ''))\nprint(repr(get_config_var('INCLUDEPY') or ''))\nprint(repr(get_config_var('Py_ENABLE_SHARED') or ''))\nprint(repr(get_config_var('MACOSX_DEPLOYMENT_TARGET') or ''))\nprint(repr(get_config_var('LDSHARED') or ''))\nprint(repr(get_config_var('CFLAGS') or ''))\nprint(repr(get_config_var('LDVERSION') or ''))"]
+out: '/usr'
+'.so'
+''
+'/usr/lib64'
+'/usr/lib64/python2.6/config'
+'/usr/include/python2.6'
+1
+''
+'gcc -pthread -shared'
+'-fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv   -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv'
+''
+
+'/usr'
+'.so'
+''
+'/usr/lib64'
+'/usr/lib64/python2.6/config'
+'/usr/include/python2.6'
+1
+''
+'gcc -pthread -shared'
+'-fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv   -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv'
+''
+
+Configuration returned from ['/usr/bin/python']:
+prefix = '/usr'
+SO = '.so'
+LDFLAGS = ''
+LIBDIR = '/usr/lib64'
+LIBPL = '/usr/lib64/python2.6/config'
+INCLUDEPY = '/usr/include/python2.6'
+Py_ENABLE_SHARED = 1
+MACOSX_DEPLOYMENT_TARGET = ''
+LDSHARED = 'gcc -pthread -shared'
+CFLAGS = '-fno-strict-aliasing -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv   -DNDEBUG -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -D_GNU_SOURCE -fPIC -fwrapv'
+LDVERSION = ''
+
+------------------------------------------------------
+python-config
+not found
+find program=['/usr/bin/python-config', 'python2.6-config', 'python-config-2.6', 'python2.6m-config'] paths=['/usr/lib64/qt-3.3/bin', '/usr/local/bin', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='PYTHON_CONFIG' -> None
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Could not find the program ['/usr/bin/python-config', 'python2.6-config', 'python-config-2.6', 'python2.6m-config']
+
+
+# try again with -L$python_LIBDIR: ['/usr/lib64']
+
+------------------------------------------------------
+Checking for library python2.6 in LIBDIR
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_9a44c3519844456e4cd4b09d5560c26a/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_9a44c3519844456e4cd4b09d5560c26a/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_9a44c3519844456e4cd4b09d5560c26a/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_9a44c3519844456e4cd4b09d5560c26a/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64', '-lpython2.6']
+err: /usr/bin/ld: cannot find -lpython2.6
+collect2: ld returned 1 exit status
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43605392: cxxprogram test.cpp.1.o -> testprog}
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_9a44c3519844456e4cd4b09d5560c26a/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64', '-lpython2.6']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: The configuration failed
+
+
+# try again with -L$python_LIBPL (some systems don't install the python library in $prefix/lib)
+
+------------------------------------------------------
+Checking for library python2.6 in python_LIBPL
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_0cd54d41841673f7fca3a4b15a00ecd8/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_0cd54d41841673f7fca3a4b15a00ecd8/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_0cd54d41841673f7fca3a4b15a00ecd8/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_0cd54d41841673f7fca3a4b15a00ecd8/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64/python2.6/config', '-lpython2.6']
+err: /usr/bin/ld: cannot find -lpython2.6
+collect2: ld returned 1 exit status
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43623312: cxxprogram test.cpp.1.o -> testprog}
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_0cd54d41841673f7fca3a4b15a00ecd8/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64/python2.6/config', '-lpython2.6']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: The configuration failed
+
+
+# try again with -L$prefix/libs, and pythonXY name rather than pythonX.Y (win32)
+
+------------------------------------------------------
+Checking for library python2.6 in $prefix/libs
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_a44db42fa7daf8759010330244f10ea6/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_a44db42fa7daf8759010330244f10ea6/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_a44db42fa7daf8759010330244f10ea6/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_a44db42fa7daf8759010330244f10ea6/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/libs', '-lpython2.6']
+err: /usr/bin/ld: cannot find -lpython2.6
+collect2: ld returned 1 exit status
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43624464: cxxprogram test.cpp.1.o -> testprog}
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_a44db42fa7daf8759010330244f10ea6/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/libs', '-lpython2.6']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: The configuration failed
+
+
+# try again with -L$python_LIBDIR: ['/usr/lib64']
+
+------------------------------------------------------
+Checking for library python2.6m in LIBDIR
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_4e4c9a3ec76b6f3ce58472e242f42cac/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_4e4c9a3ec76b6f3ce58472e242f42cac/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_4e4c9a3ec76b6f3ce58472e242f42cac/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_4e4c9a3ec76b6f3ce58472e242f42cac/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64', '-lpython2.6m']
+err: /usr/bin/ld: cannot find -lpython2.6m
+collect2: ld returned 1 exit status
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43625616: cxxprogram test.cpp.1.o -> testprog}
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_4e4c9a3ec76b6f3ce58472e242f42cac/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64', '-lpython2.6m']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: The configuration failed
+
+
+# try again with -L$python_LIBPL (some systems don't install the python library in $prefix/lib)
+
+------------------------------------------------------
+Checking for library python2.6m in python_LIBPL
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_8fe2e71f34f22a70ce04e96636b8d48e/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_8fe2e71f34f22a70ce04e96636b8d48e/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_8fe2e71f34f22a70ce04e96636b8d48e/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_8fe2e71f34f22a70ce04e96636b8d48e/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64/python2.6/config', '-lpython2.6m']
+err: /usr/bin/ld: cannot find -lpython2.6m
+collect2: ld returned 1 exit status
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43624592: cxxprogram test.cpp.1.o -> testprog}
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_8fe2e71f34f22a70ce04e96636b8d48e/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64/python2.6/config', '-lpython2.6m']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: The configuration failed
+
+
+# try again with -L$prefix/libs, and pythonXY name rather than pythonX.Y (win32)
+
+------------------------------------------------------
+Checking for library python2.6m in $prefix/libs
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_b06b0178848c1b40fccd91ec10ccefab/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_b06b0178848c1b40fccd91ec10ccefab/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_b06b0178848c1b40fccd91ec10ccefab/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_b06b0178848c1b40fccd91ec10ccefab/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/libs', '-lpython2.6m']
+err: /usr/bin/ld: cannot find -lpython2.6m
+collect2: ld returned 1 exit status
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43625296: cxxprogram test.cpp.1.o -> testprog}
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_b06b0178848c1b40fccd91ec10ccefab/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/libs', '-lpython2.6m']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: The configuration failed
+
+
+# try again with -L$python_LIBDIR: ['/usr/lib64']
+
+------------------------------------------------------
+Checking for library python26 in LIBDIR
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_a7aeb0fbaca0b5446d836d1232d0a962/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_a7aeb0fbaca0b5446d836d1232d0a962/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_a7aeb0fbaca0b5446d836d1232d0a962/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_a7aeb0fbaca0b5446d836d1232d0a962/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64', '-lpython26']
+err: /usr/bin/ld: cannot find -lpython26
+collect2: ld returned 1 exit status
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43667792: cxxprogram test.cpp.1.o -> testprog}
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_a7aeb0fbaca0b5446d836d1232d0a962/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64', '-lpython26']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: The configuration failed
+
+
+# try again with -L$python_LIBPL (some systems don't install the python library in $prefix/lib)
+
+------------------------------------------------------
+Checking for library python26 in python_LIBPL
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_2db77e5f32ff8eab6371e0882e8d555b/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_2db77e5f32ff8eab6371e0882e8d555b/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_2db77e5f32ff8eab6371e0882e8d555b/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_2db77e5f32ff8eab6371e0882e8d555b/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64/python2.6/config', '-lpython26']
+err: /usr/bin/ld: cannot find -lpython26
+collect2: ld returned 1 exit status
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 45208400: cxxprogram test.cpp.1.o -> testprog}
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_2db77e5f32ff8eab6371e0882e8d555b/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/lib64/python2.6/config', '-lpython26']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: The configuration failed
+
+
+# try again with -L$prefix/libs, and pythonXY name rather than pythonX.Y (win32)
+
+------------------------------------------------------
+Checking for library python26 in $prefix/libs
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_82aa989f1371ab126dd96ebaa3242fbf/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_82aa989f1371ab126dd96ebaa3242fbf/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_82aa989f1371ab126dd96ebaa3242fbf/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_82aa989f1371ab126dd96ebaa3242fbf/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/libs', '-lpython26']
+err: /usr/bin/ld: cannot find -lpython26
+collect2: ld returned 1 exit status
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43603920: cxxprogram test.cpp.1.o -> testprog}
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_82aa989f1371ab126dd96ebaa3242fbf/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-L/usr/libs', '-lpython26']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: The configuration failed
+
+
+### LIB NOT FOUND
+
+Include path for Python extensions (found via distutils module): '/usr/include/python2.6'
+
+------------------------------------------------------
+Checking for header Python.h
+==>
+
+#include <Python.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+	void Py_Initialize(void);
+	void Py_Finalize(void);
+#ifdef __cplusplus
+}
+#endif
+int main(int argc, char **argv)
+{
+   (void)argc; (void)argv;
+   Py_Initialize();
+   Py_Finalize();
+   return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_e5a035a94d3255b9746f725a80c0ca73/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fno-strict-aliasing', '-I/usr/include/python2.6', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_e5a035a94d3255b9746f725a80c0ca73/testbuild/test.cpp.1.o']
+err: ../test.cpp:2:20: error: Python.h: No such file or directory
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43668816: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-fno-strict-aliasing', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fexceptions', '-fstack-protector', '-m64', '-mtune=generic', '-fPIC', '-fwrapv', '-fno-strict-aliasing', '-I/usr/include/python2.6', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DPYTHONDIR="/usr/local/lib/python2.6/site-packages"', '-DPYTHONARCHDIR="/usr/local/lib64/python2.6/site-packages"', '-D_GNU_SOURCE', '-DNDEBUG', '-D_GNU_SOURCE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_e5a035a94d3255b9746f725a80c0ca73/testbuild/test.cpp.1.o']
+
+Distutils not installed? Broken python installation? Get python-config now!
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/bindings/python: The configuration failed
+------------------------------------------------------
+Checking boost includes
+headers not found, please provide a --boost-includes argument (see help)
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src: The configuration failed
+------------------------------------------------------
+Checking boost includes
+headers not found, please provide a --boost-includes argument (see help)
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src: The configuration failed
+------------------------------------------------------
+Checking for click location
+not found
+------------------------------------------------------
+Checking for program 'pkg-config'
+/usr/bin/pkg-config
+find program=['pkg-config'] paths=['/usr/lib64/qt-3.3/bin', '/usr/local/bin', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='PKGCONFIG' -> ['/usr/bin/pkg-config']
+------------------------------------------------------
+Checking for 'gtk+-2.0' >= 2.12
+['/usr/bin/pkg-config', '--atleast-version=2.12', 'gtk+-2.0']
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src/config-store: The configuration failed
+------------------------------------------------------
+Checking for 'libxml-2.0' >= 2.7
+['/usr/bin/pkg-config', '--atleast-version=2.7', 'libxml-2.0']
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src/config-store: The configuration failed
+------------------------------------------------------
+Checking for type uint128_t
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	if ((uint128_t *) 0) return 0;
+	if (sizeof (uint128_t)) return 0;
+	return 1;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_f43a66e10494a17b0cf94cfb27213de2/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_f43a66e10494a17b0cf94cfb27213de2/testbuild/test.cpp.1.o']
+err: ../test.cpp: In function ‘int main(int, char**)’:
+../test.cpp:5: error: ‘uint128_t’ was not declared in this scope
+../test.cpp:5: error: expected primary-expression before ‘)’ token
+../test.cpp:5: error: expected ‘)’ before numeric constant
+../test.cpp:6: error: ‘uint128_t’ was not declared in this scope
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src/core: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43603920: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_f43a66e10494a17b0cf94cfb27213de2/testbuild/test.cpp.1.o']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src/core: The configuration failed
+------------------------------------------------------
+Checking for type __uint128_t
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	if ((__uint128_t *) 0) return 0;
+	if (sizeof (__uint128_t)) return 0;
+	return 1;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_2c9d024dfd3b66abf789afb302fb489f/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_2c9d024dfd3b66abf789afb302fb489f/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_2c9d024dfd3b66abf789afb302fb489f/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_2c9d024dfd3b66abf789afb302fb489f/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking high precision implementation
+128-bit integer (default)
+------------------------------------------------------
+Checking for header stdint.h
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_ee17700231c1ff12121f18a41b53b3db/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_ee17700231c1ff12121f18a41b53b3db/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_ee17700231c1ff12121f18a41b53b3db/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_ee17700231c1ff12121f18a41b53b3db/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header inttypes.h
+==>
+#include <inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_01f33e39b4c42ed732bf6b7c1d952ad0/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_01f33e39b4c42ed732bf6b7c1d952ad0/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_01f33e39b4c42ed732bf6b7c1d952ad0/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_01f33e39b4c42ed732bf6b7c1d952ad0/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header sys/inttypes.h
+==>
+#include <sys/inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_fd501d81d7382bd11dadde50ba1d7cc5/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_fd501d81d7382bd11dadde50ba1d7cc5/testbuild/test.cpp.1.o']
+err: ../test.cpp:1:26: error: sys/inttypes.h: No such file or directory
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src/core: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43167568: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_fd501d81d7382bd11dadde50ba1d7cc5/testbuild/test.cpp.1.o']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src/core: The configuration failed
+------------------------------------------------------
+Checking for header sys/types.h
+==>
+#include <sys/types.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_f66ec97b38f027db1c105f5d9b2dec79/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_f66ec97b38f027db1c105f5d9b2dec79/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_f66ec97b38f027db1c105f5d9b2dec79/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_f66ec97b38f027db1c105f5d9b2dec79/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header sys/stat.h
+==>
+#include <sys/stat.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_e2ca12ede37e79d01303c3e9ebab0d09/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_e2ca12ede37e79d01303c3e9ebab0d09/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_e2ca12ede37e79d01303c3e9ebab0d09/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_e2ca12ede37e79d01303c3e9ebab0d09/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header dirent.h
+==>
+#include <dirent.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_04134bd756896817fcf73ca9f85655c6/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_04134bd756896817fcf73ca9f85655c6/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_04134bd756896817fcf73ca9f85655c6/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_04134bd756896817fcf73ca9f85655c6/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header stdlib.h
+==>
+#include <stdlib.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_c0d321f45e6f31cc3ac6575795c82ac2/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_c0d321f45e6f31cc3ac6575795c82ac2/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_c0d321f45e6f31cc3ac6575795c82ac2/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_c0d321f45e6f31cc3ac6575795c82ac2/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header signal.h
+==>
+#include <signal.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_ca7858fa6519c7e51a811f854efd320c/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_ca7858fa6519c7e51a811f854efd320c/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_ca7858fa6519c7e51a811f854efd320c/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_ca7858fa6519c7e51a811f854efd320c/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header pthread.h
+==>
+
+#include <pthread.h>
+int main ()
+{
+   pthread_mutex_t m;
+   pthread_mutex_init (&m, NULL);
+   return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_f4926bfd4a6d16952f76aa27507ca76c/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-pthread', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_f4926bfd4a6d16952f76aa27507ca76c/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_f4926bfd4a6d16952f76aa27507ca76c/testbuild/testprog[0m
+
+['/usr/bin/g++', '-pthread', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_f4926bfd4a6d16952f76aa27507ca76c/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header stdint.h
+==>
+#include <stdint.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_ee17700231c1ff12121f18a41b53b3db/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_INTTYPES_H=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_ee17700231c1ff12121f18a41b53b3db/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_ee17700231c1ff12121f18a41b53b3db/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_ee17700231c1ff12121f18a41b53b3db/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header inttypes.h
+==>
+#include <inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_01f33e39b4c42ed732bf6b7c1d952ad0/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_01f33e39b4c42ed732bf6b7c1d952ad0/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_01f33e39b4c42ed732bf6b7c1d952ad0/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_01f33e39b4c42ed732bf6b7c1d952ad0/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header sys/inttypes.h
+==>
+#include <sys/inttypes.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_fd501d81d7382bd11dadde50ba1d7cc5/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_fd501d81d7382bd11dadde50ba1d7cc5/testbuild/test.cpp.1.o']
+err: ../test.cpp:1:26: error: sys/inttypes.h: No such file or directory
+
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src/core: Test does not build: Traceback (most recent call last):
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Configure.py", line 339, in run_build
+    bld.compile()
+  File "/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/.waf-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/waflib/Build.py", line 182, in compile
+    raise Errors.BuildError(self.producer.error)
+BuildError: Build failed
+ -> task in 'testprog' failed (exit status 1): 
+	{task 43239312: cxx test.cpp -> test.cpp.1.o}
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_fd501d81d7382bd11dadde50ba1d7cc5/testbuild/test.cpp.1.o']
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src/core: The configuration failed
+------------------------------------------------------
+Checking for library rt
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_e655a53218c70dcd1fce01a92d0590b1/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-pthread', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE___UINT128_T=1', '-DINT64X64_USE_128=1', '-DHAVE_SYS_TYPES_H=1', '-DHAVE_SYS_STAT_H=1', '-DHAVE_DIRENT_H=1', '-DHAVE_STDLIB_H=1', '-DHAVE_GETENV=1', '-DHAVE_SIGNAL_H=1', '-DHAVE_PTHREAD_H=1', '-DHAVE_STDINT_H=1', '-DHAVE_INTTYPES_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_e655a53218c70dcd1fce01a92d0590b1/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_e655a53218c70dcd1fce01a92d0590b1/testbuild/testprog[0m
+
+['/usr/bin/g++', '-pthread', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_e655a53218c70dcd1fce01a92d0590b1/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic', '-lrt']
+yes
+------------------------------------------------------
+Checking for header sys/ioctl.h
+==>
+#include <sys/ioctl.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_939eb7d0237c7207cb6c0a4adc0a6b08/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_939eb7d0237c7207cb6c0a4adc0a6b08/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_939eb7d0237c7207cb6c0a4adc0a6b08/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_939eb7d0237c7207cb6c0a4adc0a6b08/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header net/if.h
+==>
+#include <net/if.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_c57d84e1d9955480d34f12a17ab05613/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_c57d84e1d9955480d34f12a17ab05613/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_c57d84e1d9955480d34f12a17ab05613/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_c57d84e1d9955480d34f12a17ab05613/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header net/ethernet.h
+==>
+#include <net/ethernet.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_65b9f4217336fe5fdc6463cbd0099ddc/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_65b9f4217336fe5fdc6463cbd0099ddc/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_65b9f4217336fe5fdc6463cbd0099ddc/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_65b9f4217336fe5fdc6463cbd0099ddc/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header linux/if_tun.h
+==>
+#include <linux/if_tun.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_2b4cbd941b25d6780bde5f993e329a08/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_2b4cbd941b25d6780bde5f993e329a08/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_2b4cbd941b25d6780bde5f993e329a08/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_2b4cbd941b25d6780bde5f993e329a08/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for header netpacket/packet.h
+==>
+#include <netpacket/packet.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_fe44c83acc32b3260affce88ba30ff2c/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_fe44c83acc32b3260affce88ba30ff2c/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_fe44c83acc32b3260affce88ba30ff2c/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_fe44c83acc32b3260affce88ba30ff2c/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for NSC location
+not found
+------------------------------------------------------
+Checking for 'sqlite3'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'sqlite3']
+err: Package sqlite3 was not found in the pkg-config search path.
+Perhaps you should add the directory containing `sqlite3.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'sqlite3' found
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/src/stats: The configuration failed
+------------------------------------------------------
+Checking for header linux/if_tun.h
+==>
+#include <linux/if_tun.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild/.conf_check_2b4cbd941b25d6780bde5f993e329a08/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_2b4cbd941b25d6780bde5f993e329a08/testbuild/test.cpp.1.o']
+[2/2] Linking [33mbuild/.conf_check_2b4cbd941b25d6780bde5f993e329a08/testbuild/testprog[0m
+
+['/usr/bin/g++', 'test.cpp.1.o', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_2b4cbd941b25d6780bde5f993e329a08/testbuild/testprog', '-Wl,-Bstatic', '-Wl,-Bdynamic']
+yes
+------------------------------------------------------
+Checking for program 'sudo'
+/usr/bin/sudo
+find program=['sudo'] paths=['/usr/lib64/qt-3.3/bin', '/usr/local/bin', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='SUDO' -> ['/usr/bin/sudo']
+------------------------------------------------------
+Checking for program 'valgrind'
+/usr/bin/valgrind
+find program=['valgrind'] paths=['/usr/lib64/qt-3.3/bin', '/usr/local/bin', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='VALGRIND' -> ['/usr/bin/valgrind']
+------------------------------------------------------
+Checking for 'gsl'
+['/usr/bin/pkg-config', '--cflags', '--libs', 'gsl']
+err: Package gsl was not found in the pkg-config search path.
+Perhaps you should add the directory containing `gsl.pc'
+to the PKG_CONFIG_PATH environment variable
+No package 'gsl' found
+
+not found
+from /nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1: The configuration failed
+----------------------------------------------------------------
+Checking for compilation flag -Wno-error=deprecated-d... support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_e58c487c663196ad4da0dc7170b0bd98/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wno-error=deprecated-declarations', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_e58c487c663196ad4da0dc7170b0bd98/testbuild/test.cpp.1.o']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -Wno-error=deprecated-d... support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_b710a2dd91903bc1ccd253cbf156eb26/test.c[0m
+
+['/usr/bin/gcc', '-Wno-error=deprecated-declarations', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.c', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_b710a2dd91903bc1ccd253cbf156eb26/testbuild/test.c.1.o']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -fstrict-aliasing support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_e58c487c663196ad4da0dc7170b0bd98/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_e58c487c663196ad4da0dc7170b0bd98/testbuild/test.cpp.1.o']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -fstrict-aliasing support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_b710a2dd91903bc1ccd253cbf156eb26/test.c[0m
+
+['/usr/bin/gcc', '-fstrict-aliasing', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.c', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_b710a2dd91903bc1ccd253cbf156eb26/testbuild/test.c.1.o']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -Wstrict-aliasing support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_e58c487c663196ad4da0dc7170b0bd98/test.cpp[0m
+
+['/usr/bin/g++', '-O0', '-ggdb', '-g3', '-Wall', '-Werror', '-Wno-error=deprecated-declarations', '-fstrict-aliasing', '-Wstrict-aliasing', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.cpp', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_e58c487c663196ad4da0dc7170b0bd98/testbuild/test.cpp.1.o']
+ok
+----------------------------------------------------------------
+Checking for compilation flag -Wstrict-aliasing support
+==>
+int main() { return 0; }
+<==
+[1/1] Compiling [32mbuild/.conf_check_b710a2dd91903bc1ccd253cbf156eb26/test.c[0m
+
+['/usr/bin/gcc', '-Wstrict-aliasing', '-DNS3_BUILD_PROFILE_DEBUG', '-DNS3_ASSERT_ENABLE', '-DNS3_LOG_ENABLE', '-DHAVE_SYS_IOCTL_H=1', '-DHAVE_IF_NETS_H=1', '-DHAVE_NET_ETHERNET_H=1', '-DHAVE_PACKET_H=1', '-DHAVE_IF_TUN_H=1', '../test.c', '-c', '-o', '/nethome/gsrinagesh3/ns-allinone-3.24.1/ns-3.24.1/build/.conf_check_b710a2dd91903bc1ccd253cbf156eb26/testbuild/test.c.1.o']
+ok
+----------------------------------------------------------------
+Checking for program 'doxygen'
+/usr/bin/doxygen
+find program=['doxygen'] paths=['/usr/lib64/qt-3.3/bin', '/usr/local/bin', '/bin', '/usr/bin', '/usr/local/sbin', '/usr/sbin', '/sbin'] var='DOXYGEN' -> ['/usr/bin/doxygen']
