@@ -30,6 +30,8 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/tcp-socket-factory.h"
 #include "new-send-application.h"
+#include <cstdio>
+#include <cstdlib>
 
 namespace ns3 {
 
@@ -78,6 +80,7 @@ NewSendApplication::NewSendApplication ()
     m_totBytes (0)
 {
   NS_LOG_FUNCTION (this);
+  response_bytes = 0;
 }
 
 NewSendApplication::~NewSendApplication ()
@@ -142,9 +145,10 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
       m_socket->SetConnectCallback (
         MakeCallback (&NewSendApplication::ConnectionSucceeded, this),
         MakeCallback (&NewSendApplication::ConnectionFailed, this));
-      m_socket->SetSendCallback (
-        MakeCallback (&NewSendApplication::DataSend, this));
-      //Need to add receive callback here. Checks opcode and increments the response_bytes counter. Once we receive resp_size amount of data, the application will send the secondary reqs
+      // m_socket->SetSendCallback (
+      //   MakeCallback (&NewSendApplication::DataSend, this));
+      m_socket->SetRecvCallback (MakeCallback (&NewSendApplication::HandleRead, this));
+      //Need to add receive callback here. Increments the response_bytes counter. Once we receive resp_size amount of data, the application will send the secondary reqs
     }
   if (m_connected)
     {
@@ -208,13 +212,15 @@ void NewSendApplication::SendData (void)
   }
 
   // First packet contains opcode 1,resp_size (total 5 bytes)
+  printf("SendApp: Sending request for %d bytes with opcode 1\n", (int) resp_size);
   create_packet_payload(resp_size, opcode, buffer, toSend);
   Ptr<Packet> packet = Create<Packet> (buffer, toSend);
   int actual = m_socket->Send (packet);
   if (actual > 0)
   {
     m_totBytes += actual;
-  }        
+  }       
+  delete [] buffer; 
   
 
   while (m_maxBytes == 0 || m_totBytes < m_maxBytes)
@@ -228,6 +234,7 @@ void NewSendApplication::SendData (void)
       NS_LOG_LOGIC ("sending packet at " << Simulator::Now ());
       Ptr<Packet> packet = Create<Packet> (toSend);
       m_txTrace (packet);
+      printf("SendApp: Sending 1 more packet. %d bytes sent so far \n", (int) m_totBytes);
       int actual = m_socket->Send (packet);
       if (actual > 0)
         {
@@ -242,7 +249,7 @@ void NewSendApplication::SendData (void)
         }
     }
   // Loop till we receive the full primary response. The response_bytes counter is incremented by the recv callback
-  while(response_bytes < resp_size) {}
+   // while(response_bytes < resp_size) {}
 
 
 
@@ -251,6 +258,22 @@ void NewSendApplication::SendData (void)
     {
       m_socket->Close ();
       m_connected = false;
+    }
+}
+
+void NewSendApplication::HandleRead (Ptr<Socket> socket)
+{
+  NS_LOG_FUNCTION (this << socket);
+  Ptr<Packet> packet;
+  Address from;
+  while ((packet = socket->RecvFrom (from)))
+    {
+      if (packet->GetSize () == 0)
+        { //EOF
+          break;
+        }
+      response_bytes += packet->GetSize ();
+      printf("SendApp: Received response %u bytes so far\n", response_bytes);
     }
 }
 
@@ -268,15 +291,15 @@ void NewSendApplication::ConnectionFailed (Ptr<Socket> socket)
   NS_LOG_LOGIC ("NewSendApplication, Connection Failed");
 }
 
-void NewSendApplication::DataSend (Ptr<Socket>, uint32_t)
-{
-  NS_LOG_FUNCTION (this);
+// void NewSendApplication::DataSend (Ptr<Socket>, uint32_t)
+// {
+//   NS_LOG_FUNCTION (this);
 
-  if (m_connected)
-    { // Only send new data if the connection has completed
-      SendData ();
-    }
-}
+//   if (m_connected)
+//     { // Only send new data if the connection has completed
+//       SendData ();
+//     }
+// }
 
 
 

@@ -35,6 +35,8 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/udp-socket-factory.h"
 #include "new-packet-sink.h"
+#include <cstdio>
+#include <cstdlib>
 
 namespace ns3 {
 
@@ -150,7 +152,7 @@ void NewPacketSink::StopApplication ()     // Called at time specified by Stop
   NS_LOG_FUNCTION (this);
   while(!m_socketList.empty ()) //these are accepted sockets, close them
     {
-      Ptr<Socket> acceptedSocket = m_socketList.front ();
+     Ptr<Socket> acceptedSocket = m_socketList.front ();
       m_socketList.pop_front ();
       acceptedSocket->Close ();
     }
@@ -160,6 +162,17 @@ void NewPacketSink::StopApplication ()     // Called at time specified by Stop
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
     }
 }
+
+uint32_t convert_uint8_uint32(uint8_t *buffer)
+{
+  uint32_t output = 0;
+  for(int i = 1; i < 5; i++)
+  {
+    output = output*256 + buffer[i];
+  }
+  return output;
+}
+
 
 void NewPacketSink::HandleRead (Ptr<Socket> socket)
 {
@@ -173,6 +186,7 @@ void NewPacketSink::HandleRead (Ptr<Socket> socket)
           break;
         }
       m_totalRx += packet->GetSize ();
+      printf("Sink: Received %u bytes so far\n", m_totalRx);
 
       if (InetSocketAddress::IsMatchingType (from))
         {
@@ -195,19 +209,20 @@ void NewPacketSink::HandleRead (Ptr<Socket> socket)
 
       uint8_t* packet_contents = (uint8_t *) malloc(sizeof(uint8_t) * 5);
       uint8_t* opcode = (uint8_t *) malloc(sizeof(uint8_t));
-
       /* Read opcode*/
       packet->CopyData(opcode, 1);
 
-      switch(packet_contents[0]){
+      printf("Sink: Opcode is %d\n", *opcode);
+      switch(*opcode){
         case 0: // Ignore
                 NS_LOG_INFO("Received Opcode: 0");
                 break;
         case 1: /* Read response size */
                 NS_LOG_INFO("Received Opcode: 1");
                 packet->CopyData(packet_contents, 5);
-                uint32_t* response_size = (uint32_t *)(&packet_contents[1]);
-                NS_LOG_INFO("Read response size: "<<*response_size);
+                uint32_t response_size = convert_uint8_uint32(packet_contents);
+                NS_LOG_INFO("Read response size: "<<response_size);
+		printf("SInk: resp size is %u\n", response_size);
                 break;
       }
 

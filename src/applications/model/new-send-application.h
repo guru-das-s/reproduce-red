@@ -139,6 +139,7 @@ private:
    * \brief Send more data as soon as some has been transmitted.
    */
   void DataSend (Ptr<Socket>, uint32_t); // for socket's SetSendCallback
+  void HandleRead (Ptr<Socket> socket);  // for socket's receive callback
 };
 
 } // namespace ns3
