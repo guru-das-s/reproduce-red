@@ -94,8 +94,8 @@ NewSendApplication::NewSendApplication ()
   NS_LOG_FUNCTION (this);
   response_bytes = 0;
   request_complete = false;
-  // port = InetSocketAddress::ConvertFrom (m_local).GetPort ();
-  port = 2000;
+  port = InetSocketAddress::ConvertFrom (m_local).GetPort ();
+  // port = 2000;
 }
 
 NewSendApplication::~NewSendApplication ()
@@ -152,7 +152,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
         }
       else if (InetSocketAddress::IsMatchingType (m_peer))
         {
-          m_socket->Bind();// (m_local); //m_local
+          m_socket->Bind (m_local); //m_local
         }
 
       m_socket->Connect (m_peer);
@@ -229,10 +229,13 @@ void NewSendApplication::SendData (void)
   }
 
   // Create sink at current port + 1
+
   PacketSinkHelper sink ("ns3::TcpSocketFactory",
                            InetSocketAddress (Ipv4Address::GetAny (), port+1));
   ApplicationContainer sinkApps = sink.Install (GetNode());
   sinkApps.Start(Simulator::Now());
+  Ptr<PacketSink> sinkptr = DynamicCast<PacketSink> (sinkApps.Get(0));
+  printf("Created sink at %d", port+1);
 
   // First packet contains opcode 1,resp_size (total 5 bytes)
   printf("SendApp: Sending request for %d bytes with opcode 1\n", (int) resp_size);
@@ -274,7 +277,10 @@ void NewSendApplication::SendData (void)
     request_complete = true;
     
   // Loop till we receive the full primary response. The response_bytes counter is incremented by the recv callback
-   // while(response_bytes < resp_size) {}
+   // while(sinkptr->GetTotalRx() < resp_size) 
+    // {
+    // printf("SendApp: Response received so far: %d", sinkptr->GetTotalRx());
+  // }
 
 
 
