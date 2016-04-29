@@ -229,19 +229,18 @@ void NewPacketSink::HandleRead (Ptr<Socket> socket)
         response_size = convert_uint8_uint32(packet_contents);
         NS_LOG_INFO("Read response size: "<<response_size);
         printf("Sink: resp size is %u\n", response_size);
+        /**
+         * Create Bulk Send Helper to transfer the 
+         * requested amount of data
+         */
+
+        /* Send the requested amount of bytes to same address but (port + 1) */
+        BulkSendHelper source ("ns3::TcpSocketFactory", InetSocketAddress( InetSocketAddress::ConvertFrom(from).GetIpv4(), InetSocketAddress::ConvertFrom (from).GetPort() + 1 ) );
+        source.SetAttribute ("MaxBytes", UintegerValue (response_size));
+        ApplicationContainer sourceApps = source.Install(GetNode());
+        sourceApps.Start (Simulator::Now());
         break;
     }
-
-    /**
-     * Create Bulk Send Helper to transfer the 
-     * requested amount of data
-     */
-
-    /* Send the requested amount of bytes to same address but (port + 1) */
-    BulkSendHelper source ("ns3::TcpSocketFactory", InetSocketAddress( InetSocketAddress::ConvertFrom(from).GetIpv4(), InetSocketAddress::ConvertFrom (from).GetPort() + 1 ) );
-    source.SetAttribute ("MaxBytes", UintegerValue (response_size));
-    ApplicationContainer sourceApps = source.Install(GetNode());
-    sourceApps.Start (Simulator::Now());
 
     m_rxTrace (packet, from);
 
