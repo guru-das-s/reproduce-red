@@ -134,7 +134,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
 
       if (Inet6SocketAddress::IsMatchingType (m_peer))
         {
-          m_socket->Bind6 (m_local);
+          m_socket->Bind6 ();
         }
       else if (InetSocketAddress::IsMatchingType (m_peer))
         {
