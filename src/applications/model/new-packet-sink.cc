@@ -22,6 +22,7 @@
 
 
 #include "ns3/address.h"
+#include "ns3/core-module.h"
 #include "ns3/address-utils.h"
 #include "ns3/log.h"
 #include "ns3/inet-socket-address.h"
@@ -34,7 +35,10 @@
 #include "ns3/packet.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/udp-socket-factory.h"
+#include "ns3/point-to-point-layout-module.h"
 #include "new-packet-sink.h"
+#include "ns3/bulk-send-helper.h"
+#include "ns3/new-packet-sink-helper.h"
 #include <cstdio>
 #include <cstdlib>
 
@@ -180,58 +184,70 @@ void NewPacketSink::HandleRead (Ptr<Socket> socket)
   Ptr<Packet> packet;
   Address from;
   while ((packet = socket->RecvFrom (from)))
-    {
-      if (packet->GetSize () == 0)
-        { //EOF
-          break;
-        }
-      m_totalRx += packet->GetSize ();
-      printf("Sink: Received %u bytes so far\n", m_totalRx);
-
-      if (InetSocketAddress::IsMatchingType (from))
-        {
-          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
-                       << "s packet sink received "
-                       <<  packet->GetSize () << " bytes from "
-                       << InetSocketAddress::ConvertFrom(from).GetIpv4 ()
-                       << " port " << InetSocketAddress::ConvertFrom (from).GetPort ()
-                       << " total Rx " << m_totalRx << " bytes");
-        }
-      else if (Inet6SocketAddress::IsMatchingType (from))
-        {
-          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
-                       << "s packet sink received "
-                       <<  packet->GetSize () << " bytes from "
-                       << Inet6SocketAddress::ConvertFrom(from).GetIpv6 ()
-                       << " port " << Inet6SocketAddress::ConvertFrom (from).GetPort ()
-                       << " total Rx " << m_totalRx << " bytes");
-        }
-
-      uint8_t* packet_contents = (uint8_t *) malloc(sizeof(uint8_t) * 5);
-      uint8_t* opcode = (uint8_t *) malloc(sizeof(uint8_t));
-
-      /* Read opcode*/
-      packet->CopyData(opcode, 1);
-      printf("Sink: Opcode is %d\n", *opcode);
-
-      switch(*opcode){
-        case 0: // Ignore
-                NS_LOG_INFO("Received Opcode: 0");
-                break;
-        case 1: /* Read response size */
-                NS_LOG_INFO("Received Opcode: 1");
-                packet->CopyData(packet_contents, 5);
-                uint32_t response_size = convert_uint8_uint32(packet_contents);
-                NS_LOG_INFO("Read response size: "<<response_size);
-                printf("Sink: resp size is %u\n", response_size);
-                break;
-      }
-
-      m_rxTrace (packet, from);
-
-      free(packet_contents);
-      free(opcode);
+  {
+    if (packet->GetSize () == 0)
+    { //EOF
+      break;
     }
+    m_totalRx += packet->GetSize ();
+    printf("Sink: Received %u bytes so far\n", m_totalRx);
+
+    if (InetSocketAddress::IsMatchingType (from))
+    {
+      NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
+          << "s packet sink received "
+          <<  packet->GetSize () << " bytes from "
+          << InetSocketAddress::ConvertFrom(from).GetIpv4 ()
+          << " port " << InetSocketAddress::ConvertFrom (from).GetPort ()
+          << " total Rx " << m_totalRx << " bytes");
+    }
+    else if (Inet6SocketAddress::IsMatchingType (from))
+    {
+      NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
+          << "s packet sink received "
+          <<  packet->GetSize () << " bytes from "
+          << Inet6SocketAddress::ConvertFrom(from).GetIpv6 ()
+          << " port " << Inet6SocketAddress::ConvertFrom (from).GetPort ()
+          << " total Rx " << m_totalRx << " bytes");
+    }
+
+    uint8_t* packet_contents = (uint8_t *) malloc(sizeof(uint8_t) * 5);
+    uint8_t* opcode = (uint8_t *) malloc(sizeof(uint8_t));
+    uint32_t response_size;
+
+    /* Read opcode*/
+    packet->CopyData(opcode, 1);
+    printf("Sink: Opcode is %d\n", *opcode);
+
+    switch(*opcode){
+      case 0: // Ignore
+        NS_LOG_INFO("Received Opcode: 0");
+        break;
+      case 1: /* Read response size */
+        NS_LOG_INFO("Received Opcode: 1");
+        packet->CopyData(packet_contents, 5);
+        response_size = convert_uint8_uint32(packet_contents);
+        NS_LOG_INFO("Read response size: "<<response_size);
+        printf("Sink: resp size is %u\n", response_size);
+        break;
+    }
+
+    /**
+     * Create Bulk Send Helper to transfer the 
+     * requested amount of data
+     */
+
+    /* Send the requested amount of bytes to same address but (port + 1) */
+    BulkSendHelper source ("ns3::TcpSocketFactory", InetSocketAddress( InetSocketAddress::ConvertFrom(from).GetIpv4(), InetSocketAddress::ConvertFrom (from).GetPort() + 1 ) );
+    source.SetAttribute ("MaxBytes", UintegerValue (response_size));
+    ApplicationContainer sourceApps = source.Install(GetNode());
+    sourceApps.Start (Simulator::Now());
+
+    m_rxTrace (packet, from);
+
+    free(packet_contents);
+    free(opcode);
+  }
 }
 
 
