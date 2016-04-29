@@ -29,13 +29,14 @@
 
 namespace ns3 {
 
-NewSendHelper::NewSendHelper (std::string protocol, Address addressS, Address addressD, uint32_t resp_size)
+NewSendHelper::NewSendHelper (std::string protocol, Address addressS, Address addressD, uint32_t resp_size, uint32_t max_size)
 {
   m_factory.SetTypeId ("ns3::NewSendApplication");
   m_factory.Set ("Protocol", StringValue (protocol));
   m_factory.Set ("Remote", AddressValue (addressD));
   m_factory.Set ("Local", AddressValue (addressS));
   m_factory.Set ("RecvBytes", UintegerValue(resp_size));
+  m_factory.Set ("MaxBytes", UintegerValue(max_size));
 }
 
 void

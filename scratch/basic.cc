@@ -47,8 +47,8 @@ int main (int argc, char *argv[])
   std::cout<<"Created sink\n";
 
   NewSendHelper sender("ns3::TcpSocketFactory",
-                         InetSocketAddress (p2pInterfaces1.GetAddress(0), port), InetSocketAddress (p2pInterfaces1.GetAddress(1), port), 500);
-  sender.SetAttribute ("MaxBytes", UintegerValue (5000));
+                         InetSocketAddress (p2pInterfaces1.GetAddress(0), port), InetSocketAddress (p2pInterfaces1.GetAddress(1), port), 500, 5000);
+  //sender.SetAttribute ("MaxBytes", UintegerValue (5000));
   ApplicationContainer sourceApps = sender.Install (p2pNodes1.Get(0));
   std::cout<<"created source\n";
 
