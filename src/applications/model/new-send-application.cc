@@ -30,6 +30,9 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/tcp-socket-factory.h"
 #include "new-send-application.h"
+#include "ns3/applications-module.h"
+#include "ns3/packet-sink.h"
+
 #include <cstdio>
 #include <cstdlib>
 
@@ -54,6 +57,10 @@ NewSendApplication::GetTypeId (void)
                    AddressValue (),
                    MakeAddressAccessor (&NewSendApplication::m_peer),
                    MakeAddressChecker ())
+    .AddAttribute ("Local", "The address of the source",
+                   AddressValue (),
+                   MakeAddressAccessor (&NewSendApplication::m_local),
+                   MakeAddressChecker ())
     .AddAttribute ("MaxBytes",
                    "The total number of bytes to send. "
                    "Once these bytes are sent, "
@@ -61,6 +68,11 @@ NewSendApplication::GetTypeId (void)
                    "that there is no limit.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&NewSendApplication::m_maxBytes),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("RecvBytes",
+                   "The total number of bytes to receive. ",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&NewSendApplication::resp_size),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Protocol", "The type of protocol to use.",
                    TypeIdValue (TcpSocketFactory::GetTypeId ()),
@@ -82,6 +94,8 @@ NewSendApplication::NewSendApplication ()
   NS_LOG_FUNCTION (this);
   response_bytes = 0;
   request_complete = false;
+  // port = InetSocketAddress::ConvertFrom (m_local).GetPort ();
+  port = 2000;
 }
 
 NewSendApplication::~NewSendApplication ()
@@ -138,7 +152,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
         }
       else if (InetSocketAddress::IsMatchingType (m_peer))
         {
-          m_socket->Bind (m_local); //m_local
+          m_socket->Bind();// (m_local); //m_local
         }
 
       m_socket->Connect (m_peer);
@@ -215,10 +229,10 @@ void NewSendApplication::SendData (void)
   }
 
   // Create sink at current port + 1
-  // PacketSinkHelper sink ("ns3::TcpSocketFactory",
-  //                          InetSocketAddress (Ipv4Address::GetAny (), port+1));
-  // ApplicationContainer sinkApps = sink.Install (GetNode());
-  // sinkApps.Start(Simulator::Now());
+  PacketSinkHelper sink ("ns3::TcpSocketFactory",
+                           InetSocketAddress (Ipv4Address::GetAny (), port+1));
+  ApplicationContainer sinkApps = sink.Install (GetNode());
+  sinkApps.Start(Simulator::Now());
 
   // First packet contains opcode 1,resp_size (total 5 bytes)
   printf("SendApp: Sending request for %d bytes with opcode 1\n", (int) resp_size);
@@ -270,6 +284,7 @@ void NewSendApplication::SendData (void)
       m_socket->Close ();
       m_connected = false;
     }
+    // StopApplication();
 }
 
 // void NewSendApplication::HandleRead (Ptr<Socket> socket)
