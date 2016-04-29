@@ -138,7 +138,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
         }
       else if (InetSocketAddress::IsMatchingType (m_peer))
         {
-          m_socket->Bind (); //m_local
+          m_socket->Bind (m_local); //m_local
         }
 
       m_socket->Connect (m_peer);
@@ -272,21 +272,21 @@ void NewSendApplication::SendData (void)
     }
 }
 
-void NewSendApplication::HandleRead (Ptr<Socket> socket)
-{
-  NS_LOG_FUNCTION (this << socket);
-  Ptr<Packet> packet;
-  Address from;
-  while ((packet = socket->RecvFrom (from)))
-    {
-      if (packet->GetSize () == 0)
-        { //EOF
-          break;
-        }
-      response_bytes += packet->GetSize ();
-      printf("SendApp: Received response %u bytes so far\n", response_bytes);
-    }
-}
+// void NewSendApplication::HandleRead (Ptr<Socket> socket)
+// {
+//   NS_LOG_FUNCTION (this << socket);
+//   Ptr<Packet> packet;
+//   Address from;
+//   while ((packet = socket->RecvFrom (from)))
+//     {
+//       if (packet->GetSize () == 0)
+//         { //EOF
+//           break;
+//         }
+//       response_bytes += packet->GetSize ();
+//       printf("SendApp: Received response %u bytes so far\n", response_bytes);
+//     }
+// }
 
 void NewSendApplication::ConnectionSucceeded (Ptr<Socket> socket)
 {
