@@ -29,6 +29,7 @@ int main (int argc, char *argv[])
 
   NetDeviceContainer p2pDevices1;
   p2pDevices1 = pointToPoint1.Install(p2pNodes1);
+  std::cout<<"Created p2p\n";
 
   InternetStackHelper stack;
   stack.Install(p2pNodes1);
@@ -43,12 +44,18 @@ int main (int argc, char *argv[])
   NewPacketSinkHelper sink ("ns3::TcpSocketFactory",
                           InetSocketAddress (Ipv4Address::GetAny (), port));
   sinkApps.Add (sink.Install(p2pNodes1.Get(1)));
+  std::cout<<"Created sink\n";
+
   NewSendHelper sender("ns3::TcpSocketFactory",
-                         InetSocketAddress (p2pInterfaces1.GetAddress(1), port));
+                         InetSocketAddress (p2pInterfaces1.GetAddress(0), port), InetSocketAddress (p2pInterfaces1.GetAddress(1), port), 500);
+  sender.SetAttribute ("MaxBytes", UintegerValue (5000));
   ApplicationContainer sourceApps = sender.Install (p2pNodes1.Get(0));
+  std::cout<<"created source\n";
+
   sinkApps.Start(Seconds(0));
   sinkApps.Stop(Seconds(10));
   sourceApps.Start(Seconds(0));
+  std::cout<<"App started\n";
   sourceApps.Stop(Seconds (10));
 
 
@@ -56,4 +63,5 @@ int main (int argc, char *argv[])
   Simulator::Stop(Seconds(30));
   Simulator::Run ();
   Simulator::Destroy ();
+  std::cout<<"Sim ended\n";
 }
