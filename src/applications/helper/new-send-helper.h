@@ -52,7 +52,7 @@ public:
    * \param address the address of the remote node to send traffic
    *        to.
    */
-  NewSendHelper (std::string protocol, Address address);
+  NewSendHelper (std::string protocol, Address addressS, Address addressD, uint32_t resp_size);
 
   /**
    * Helper function used to set the underlying application attributes, 

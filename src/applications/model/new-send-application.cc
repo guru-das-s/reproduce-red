@@ -94,8 +94,8 @@ NewSendApplication::NewSendApplication ()
   NS_LOG_FUNCTION (this);
   response_bytes = 0;
   request_complete = false;
-  port = InetSocketAddress::ConvertFrom (m_local).GetPort ();
-  // port = 2000;
+  //port = InetSocketAddress::ConvertFrom (m_local).GetPort ();
+   port = 2000;
 }
 
 NewSendApplication::~NewSendApplication ()
@@ -131,7 +131,7 @@ NewSendApplication::DoDispose (void)
 void NewSendApplication::StartApplication (void) // Called at time specified by Start
 {
   NS_LOG_FUNCTION (this);
-
+  printf("starting APP\n");
   // Create the socket if not already
   if (!m_socket)
     {
@@ -145,7 +145,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
                           "NewSend requires SOCK_STREAM or SOCK_SEQPACKET. "
                           "In other words, use TCP instead of UDP.");
         }
-
+      printf("before bind\n");
       if (Inet6SocketAddress::IsMatchingType (m_peer))
         {
           m_socket->Bind6 ();
@@ -154,7 +154,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
         {
           m_socket->Bind (m_local); //m_local
         }
-
+      printf("before connect\n");
       m_socket->Connect (m_peer);
       m_socket->ShutdownRecv ();
       m_socket->SetConnectCallback (
@@ -167,6 +167,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
       // m_socket->SetRecvCallback (MakeCallback (&NewSendApplication::HandleRead, this));
       //Need to add receive callback here. Increments the response_bytes counter. Once we receive resp_size amount of data, the application will send the secondary reqs
     }
+  printf("connection status: %d",(int) m_connected);
   if (m_connected)
     {
       SendData ();
@@ -207,8 +208,8 @@ void NewSendApplication::SendData (void)
 {
   NS_LOG_FUNCTION (this);
   //Remove this later
-  m_maxBytes = 5000;
-  resp_size = 8000;
+  //m_maxBytes = 5000;
+  //resp_size = 8000;
 
 
   uint32_t request_size = m_maxBytes;
@@ -227,7 +228,7 @@ void NewSendApplication::SendData (void)
   {
     toSend = request_size;
   }
-
+  printf("in senddata\n");
   // Create sink at current port + 1
 
   PacketSinkHelper sink ("ns3::TcpSocketFactory",
