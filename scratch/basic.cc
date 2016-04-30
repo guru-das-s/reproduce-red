@@ -53,15 +53,18 @@ int main (int argc, char *argv[])
   std::cout<<"created source\n";
 
   sinkApps.Start(Seconds(0));
-  sinkApps.Stop(Seconds(10));
+  sinkApps.Stop(Seconds(30));
   sourceApps.Start(Seconds(0));
   std::cout<<"App started\n";
-  sourceApps.Stop(Seconds (10));
+  sourceApps.Stop(Seconds (30));
 
-
+  Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
+  //std::cout<<"Status of response: "<<sendptr->ResponseComplete()<<std::endl;
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   Simulator::Stop(Seconds(30));
   Simulator::Run ();
+  std::cout<<"Status of response: "<<sendptr->ResponseComplete()<<std::endl;
+  
   Simulator::Destroy ();
   std::cout<<"Sim ended\n";
 }

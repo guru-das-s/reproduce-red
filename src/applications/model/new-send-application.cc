@@ -95,7 +95,7 @@ NewSendApplication::NewSendApplication ()
   response_bytes = 0;
   request_complete = false;
   //port = InetSocketAddress::ConvertFrom (m_local).GetPort ();
-   port = 2000;
+  // port = 2000;
 }
 
 NewSendApplication::~NewSendApplication ()
@@ -136,6 +136,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
   if (!m_socket)
     {
       m_socket = Socket::CreateSocket (GetNode (), m_tid);
+      port = InetSocketAddress::ConvertFrom (m_local).GetPort ();
 
       // Fatal error if socket type is not NS3_SOCK_STREAM or NS3_SOCK_SEQPACKET
       if (m_socket->GetSocketType () != Socket::NS3_SOCK_STREAM &&
@@ -235,7 +236,7 @@ void NewSendApplication::SendData (void)
                            InetSocketAddress (Ipv4Address::GetAny (), port+1));
   ApplicationContainer sinkApps = sink.Install (GetNode());
   sinkApps.Start(Simulator::Now());
-  Ptr<PacketSink> sinkptr = DynamicCast<PacketSink> (sinkApps.Get(0));
+  sinkptr = DynamicCast<PacketSink> (sinkApps.Get(0));
   printf("Created sink at %d", port+1);
 
   // First packet contains opcode 1,resp_size (total 5 bytes)
@@ -278,10 +279,10 @@ void NewSendApplication::SendData (void)
     request_complete = true;
     
   // Loop till we receive the full primary response. The response_bytes counter is incremented by the recv callback
-   // while(sinkptr->GetTotalRx() < resp_size) 
-    // {
-    // printf("SendApp: Response received so far: %d", sinkptr->GetTotalRx());
-  // }
+  //  while(sinkptr->GetTotalRx() < resp_size) 
+  //  {
+  //    printf("SendApp: Response received so far: %d", sinkptr->GetTotalRx());
+  //  }
 
 
 
@@ -293,6 +294,18 @@ void NewSendApplication::SendData (void)
     }
     // StopApplication();
 }
+
+bool NewSendApplication::ResponseComplete()
+{
+    if(sinkptr->GetTotalRx() < resp_size)
+    {
+      printf("SendApp: Response received so far: %d", sinkptr->GetTotalRx());
+      return false;
+    }
+    else
+       return true;
+} 
+
 
 // void NewSendApplication::HandleRead (Ptr<Socket> socket)
 // {

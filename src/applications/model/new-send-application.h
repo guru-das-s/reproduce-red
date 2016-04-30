@@ -26,6 +26,7 @@
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
+#include "ns3/packet-sink.h"
 
 namespace ns3 {
 
@@ -98,6 +99,7 @@ public:
    * \return pointer to associated socket
    */
   Ptr<Socket> GetSocket (void) const;
+  bool ResponseComplete();
 
 protected:
   virtual void DoDispose (void);
@@ -123,7 +125,7 @@ private:
   bool            request_complete;
   Address         m_local;        //!< Local address to bind to
   uint16_t        port;           // Local port
-
+  Ptr<PacketSink> sinkptr;
   /// Traced Callback: sent packets
   TracedCallback<Ptr<const Packet> > m_txTrace;
 
