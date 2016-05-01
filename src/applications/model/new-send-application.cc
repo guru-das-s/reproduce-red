@@ -157,6 +157,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
         }
       printf("before connect\n");
       m_socket->Connect (m_peer);
+      printf("after connect\n" );
       m_socket->ShutdownRecv ();
       m_socket->SetConnectCallback (
         MakeCallback (&NewSendApplication::ConnectionSucceeded, this),
@@ -169,10 +170,10 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
       //Need to add receive callback here. Increments the response_bytes counter. Once we receive resp_size amount of data, the application will send the secondary reqs
     }
   printf("connection status: %d",(int) m_connected);
-  if (m_connected)
-    {
-      SendData ();
-    }
+  // if (m_connected)
+  //   {
+  //     SendData ();
+  //   }
 }
 
 void NewSendApplication::StopApplication (void) // Called at time specified by Stop
@@ -330,16 +331,17 @@ Address NewSendApplication::GetDestinationAddress()
 
 void NewSendApplication::ConnectionSucceeded (Ptr<Socket> socket)
 {
+  printf("ConnectionSucceeded\n");
   NS_LOG_FUNCTION (this << socket);
   NS_LOG_LOGIC ("NewSendApplication Connection succeeded");
   m_connected = true;
-  if(!request_complete){
-    SendData ();
-  }  
+  SendData ();
+ 
 }
 
 void NewSendApplication::ConnectionFailed (Ptr<Socket> socket)
 {
+  printf("ConnectionFailed\n");
   NS_LOG_FUNCTION (this << socket);
   NS_LOG_LOGIC ("NewSendApplication, Connection Failed");
 }
