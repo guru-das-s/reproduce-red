@@ -14,14 +14,9 @@ typedef struct a{
 struct classcomp {
   bool operator() (const cdfentry_t& lhs, const cdfentry_t& rhs) const
   {
-    return lhs.prob_value > rhs.prob_value; 
+    return lhs.prob_value < rhs.prob_value; 
   }
 };
-
-float prob_values[] = {0.1463499420626, 0.300115874855, 0.715527230591};
-int size_values[] = {108, 217, 285};
-
-cdfentry_t entries[] = { {0.1463499420626, 108}, { 0.300115874855, 217}, {0.715527230591, 285} };
 
 set<cdfentry_t, classcomp> probs;
 
