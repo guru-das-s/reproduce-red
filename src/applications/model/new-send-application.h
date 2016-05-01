@@ -100,6 +100,7 @@ public:
    */
   Ptr<Socket> GetSocket (void) const;
   bool ResponseComplete();
+  Address GetDestinationAddress();
 
 protected:
   virtual void DoDispose (void);

@@ -306,6 +306,11 @@ bool NewSendApplication::ResponseComplete()
        return true;
 } 
 
+Address NewSendApplication::GetDestinationAddress()
+{
+  return m_peer;
+}
+
 
 // void NewSendApplication::HandleRead (Ptr<Socket> socket)
 // {
