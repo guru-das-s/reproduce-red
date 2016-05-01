@@ -16,51 +16,144 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("Project1");
+NS_LOG_COMPONENT_DEFINE ("TuningRed");
 
-void User(browserNum)
+typedef struct used_address
 {
-  destServer = generateDestServer()
+  uint32_t node;
+  uint16_t port;
+} used_address_t;
+
+bool operator<(const used_address_t& lhs, const used_address_t& rhs)
+{
+  return lhs.node*100000 + lhs.port < rhs.node*100000 + rhs.port;
+}
+
+Ptr<UniformRandomVariable> uv;
+std::set<used_address_t> usedAddresses; 
+NodeContainer browsers;
+Ipv4InterfaceContainer browserInterfaces;
+Ipv4InterfaceContainer serverInterfaces;
+
+uint16_t GeneratePortNum(uint32_t node)
+{
+  used_address_t current;
+  current.node = node;
+  current.port = (uint16_t) floor(uv->GetValue(1024.0, 60000.0));
+  if(current.port % 2 == 1)
+  {
+    current.port++;
+  }
+
+  used_address_t next;
+  next.node = node;
+  next.port = current.port + 1;
+
+  while(usedAdresses.find(current) != usedAdresses.end() && usedAdresses.find(next) != usedAdresses.end())
+  {
+    current.port = (uint16_t) floor(uv->GetValue(1024.0, 60000));
+    if(current.port % 2 == 1)
+    {
+      current.port++;
+    }
+    next.port = current.port + 1;
+  }
+  usedAdresses.insert(current);
+  usedAdresses.insert(next);
+  return current.port;
+}
+
+uint32_t generateConsecPageCounter()
+{
+  return 10;
+}
+
+uint32_t generatePrimaryRequestSize()
+{
+  return 2000;
+}
+
+uint32_t generatePrimaryResponseSize()
+{
+  return 10000;
+}
+
+uint32_t generateNumSecondaryRequests()
+{
+  return 5;
+}
+
+uint32_t generateSecondaryRequestSize()
+{
+  return 3000;
+}
+
+uint32_t generateSecondaryResponseSize()
+{
+  return 15000;
+}
+
+InetSocketAddress generateDestServer()
+{
+  // pick server node num
+  uint32_t server = 0;
+  uint16_t port = 5000;
+  return InetSocketAddress(serverInterfaces.Get(server), port);
+}
+
+void User(uint32_t browserNum)
+{
+  InetSocketAddress destServer = generateDestServer()
   uint32_t* consecPageCounter = new uint32_t();
   *consecPageCounter = generateConsecPageCounter()
-  primaryRequest(browserNum, address destServer, consecPageCounter)
+  primaryRequest(browserNum, Address destServer, consecPageCounter)
 }
 
-void primaryRequest(browserNum, address destServer, consecPageCounter)
+void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t *consecPageCounter)
 {
-  port = PickPort()
-  Pick sendSize and respSizes
+  uint16_t port = GeneratePortNum(browserNum);
+  uint32_t primaryReqSize = generatePrimaryRequestSize();
+  uint32_t primaryRespSize = generatePrimaryResponseSize();
   //Generate primary request
-  A = NewSendApplication(browserNum||port, destServer,  sendSize, respSize)
-  Schedule(checkPrimaryComplete(A, consecPageCounter), now()+delta)
+  NewSendHelper reqSender("ns3::TcpSocketFactory",
+                         InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
+  ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
+  Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
+  Schedule(checkPrimaryComplete(browserNum, sendptr, consecPageCounter), now()+delta);
 }
 
-void checkPrimaryComplete(NewSendApplication* A, uint32_t* consecPageCounter)
+void checkPrimaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter)
 {
-  address destServer = extractDestAdd(A)
-  if(A->ResponseComplete())
-    secondaryRequest(destServer, consecPageCounter)
+  if(sendptr->ResponseComplete())
+  {
+    InetSocketAddress destServer = ConvertToInetSocketAddress(sendptr->GetDestinationAddress());
+    secondaryRequest(browserNum, destServer, consecPageCounter);
+  }
   else:
-    Schedule(checkPrimaryComplete(A, consecPageCounter), now()+delta)
+    Schedule(checkPrimaryComplete(browserNum, sendptr, consecPageCounter), now()+delta)
 }
 
-void secondaryRequest(address destServer, uint32_t* consecPageCounter)
+void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t* consecPageCounter)
 {
   uint32_t* secondaryRequestCounter = new uint32_t();
   *secondaryRequestCounter = generateNumSecondaryRequests()
-  for(int i = 0; i < *secondaryRequestCounter; i++ )
+  for(int i = 0; i < *secondaryRequestCounter; i++)
   {
-    Pick sendSize and respSizes
-    port = PickPort()
+    uint32_t secReqSize = generateSecondaryRequestSize();
+    uint32_t secRespSize = generateSecondaryResponseSize();
+    uint16_t port = GeneratePortNum(browserNum);
     //Generate secondary request
-    A = NewSendApplication(browserNum||port, destServer,  sendSize, respSize)
-    Schedule(checkSecondaryComplete(A, consecPageCounter, secondaryRequestCounter), now()+delta)
+    NewSendHelper reqSender("ns3::TcpSocketFactory",
+                         InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
+    ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
+    Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
+    Schedule(checkSecondaryComplete(browserNum, sendptr, consecPageCounter, secondaryRequestCounter), now()+delta)
   }
 }
 
-void checkSecondaryComplete(NewSendApplication*A, uint32_t* consecPageCounter, uint32_t* secondaryRequestCounter)
+void checkSecondaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter, uint32_t* secondaryRequestCounter)
 {
-  if(A->ResponseComplete())
+  if(sendptr->ResponseComplete())
   {
    *secondaryRequestCounter--;
    if(*secondaryRequestCounter == 0)  //Page loaded, think and open new one
@@ -75,16 +168,22 @@ void checkSecondaryComplete(NewSendApplication*A, uint32_t* consecPageCounter, u
     }
     else
     {
-      Schedule(primaryRequest(), now()+thinkTime)
+      InetSocketAddress destServer = ConvertToInetSocketAddress(sendptr->GetDestinationAddress());
+      Schedule(primaryRequest(browserNum, destServer, consecPageCounter), now()+thinkTime)
     }
    }
   }
   else
-    Schedule(checkSecondaryComplete(A, consecPageCounter, secondaryRequestCounter)
+    Schedule(checkSecondaryComplete(browserNum, sendptr, consecPageCounter, secondaryRequestCounter)
 }
 
 int main (int argc, char *argv[])
 {
+  RngSeedManager::SetSeed (11223344);
+  uv = CreateObject<UniformRandomVariable> ();
+  uv->SetAttribute("Stream", IntegerValue(6110));
+
+
   NodeContainer p2pNodes1;
   p2pNodes1.Create(2);
 
