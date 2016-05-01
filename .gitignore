@@ -13,3 +13,4 @@ build/
 *.dia
 *.rst
 doc/manual/
+datareader
