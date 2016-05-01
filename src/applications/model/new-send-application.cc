@@ -155,6 +155,12 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
         {
           m_socket->Bind (m_local); //m_local
         }
+      PacketSinkHelper sink ("ns3::TcpSocketFactory",
+                           InetSocketAddress (Ipv4Address::GetAny (), port+1));
+      ApplicationContainer sinkApps = sink.Install (GetNode());
+      // sinkApps.Start(Simulator::Now());
+      sinkptr = DynamicCast<PacketSink> (sinkApps.Get(0));
+      printf("Created sink at %d", port+1);
       printf("before connect\n");
       m_socket->Connect (m_peer);
       printf("after connect\n" );
@@ -217,6 +223,7 @@ void NewSendApplication::SendData (void)
   uint32_t request_size = m_maxBytes;
   uint32_t toSend = m_sendSize;
   uint8_t *buffer = new uint8_t[toSend];
+  printf("To send size: %d\n", toSend);
   // Opcodes 
   // 0: extra data. don't read the rest of the packet. 
   // 1: primary request
@@ -228,17 +235,12 @@ void NewSendApplication::SendData (void)
   }
   if(request_size < toSend)
   {
+    printf("request size %d\n", request_size);
     toSend = request_size;
   }
   printf("in senddata\n");
   // Create sink at current port + 1
 
-  PacketSinkHelper sink ("ns3::TcpSocketFactory",
-                           InetSocketAddress (Ipv4Address::GetAny (), port+1));
-  ApplicationContainer sinkApps = sink.Install (GetNode());
-  sinkApps.Start(Simulator::Now());
-  sinkptr = DynamicCast<PacketSink> (sinkApps.Get(0));
-  printf("Created sink at %d", port+1);
 
   // First packet contains opcode 1,resp_size (total 5 bytes)
   printf("SendApp: Sending request for %d bytes with opcode 1\n", (int) resp_size);
@@ -252,19 +254,19 @@ void NewSendApplication::SendData (void)
   delete [] buffer; 
   
 
-  while (m_maxBytes == 0 || m_totBytes < m_maxBytes)
+  while (m_totBytes < request_size)
     { // Time to send more
       
       // Make sure we don't send too many
       if (m_maxBytes > 0)
         {
-          toSend = std::min (m_sendSize, m_maxBytes - m_totBytes);
+          toSend = std::min (m_sendSize, request_size - m_totBytes);
         }
       NS_LOG_LOGIC ("sending packet at " << Simulator::Now ());
       Ptr<Packet> packet = Create<Packet> (toSend);
       m_txTrace (packet);     
       int actual = m_socket->Send (packet);
-      printf("SendApp: Sending 1 more packet. %d bytes sent so far \n", (int) m_totBytes);
+      // printf("SendApp: Sending 1 more packet. %d bytes sent so far \n", (int) m_totBytes);
       if (actual > 0)
         {
           m_totBytes += actual;
@@ -300,7 +302,7 @@ bool NewSendApplication::ResponseComplete()
 {
     if(sinkptr->GetTotalRx() < resp_size)
     {
-      printf("SendApp: Response received so far: %d", sinkptr->GetTotalRx());
+      // printf("SendApp: Response received so far: %d", sinkptr->GetTotalRx());
       return false;
     }
     else

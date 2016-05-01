@@ -23,7 +23,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TuningRed");
 
 // Delete these temp lines:
-Time delta = Seconds(0.005);
+Time delta = Seconds(0.5);
 
 typedef struct used_address
 {
@@ -101,16 +101,16 @@ void populate_cdf_data(std::ifstream& file, std::set<cdfentry_t, classcomp>& cdf
   {
     while ( std::getline (file, line) )
     {
-      std::cout << line << '\n';
+      // std::cout << line << '\n';
       size_t found = line.find(",");
       std::string prob = line.substr(0, found);
       std::string sizeval = line.substr(found+1);
 
-      std::string::size_type sz;     // alias of size_t
+      // std::string::size_type sz;     // alias of size_t
       cdfentry_t entry;
 
-      entry.prob_value = std::stof(line, &sz);
-      entry.size_value = std::stoi(line.substr(sz+1));
+      // entry.prob_value = std::stof(line, &sz);
+      // entry.size_value = std::stoi(line.substr(sz+1));
       cdfset.insert(entry);
     }
     std::cout<<"\n";
@@ -128,51 +128,51 @@ int get_size(std::set<cdfentry_t, classcomp>& cdfset, float probval)
 
 uint32_t generateConsecPageCounter()
 {
-  float probval = uv->GetValue(0.0, 1.0);
-  //return get_size(cdf_consecpages, probval);
-  return 10;
+  // float probval = uv->GetValue(0.0, 1.0);
+  // return get_size(cdf_consecpages, probval);
+  return 1;
 }
 
 uint32_t generatePrimaryRequestSize()
 {
-  float probval = uv->GetValue(0.0, 1.0);
-  //return get_size(cdf_primaryreq, probval);
+  // float probval = uv->GetValue(0.0, 1.0);
+  // return get_size(cdf_primaryreq, probval);
   return 2000;
 }
 
 uint32_t generatePrimaryResponseSize()
 {
-  float probval = uv->GetValue(0.0, 1.0);
-  //return get_size(cdf_primaryreply, probval);
-  return 10000;
+  // float probval = uv->GetValue(0.0, 1.0);
+  // return get_size(cdf_primaryreply, probval);
+  return 1000;
 }
 
 uint32_t generateNumSecondaryRequests()
 {
-  float probval = uv->GetValue(0.0, 1.0);
-  //return get_size(cdf_secondaryreq, probval);
-  return 5;
+  // float probval = uv->GetValue(0.0, 1.0);
+  // return get_size(cdf_filesperpage, probval);
+  return 2;
 }
 
 uint32_t generateSecondaryRequestSize()
 {
-  float probval = uv->GetValue(0.0, 1.0);
-  //return get_size(cdf_secondaryreq, probval);
-  return 3000;
+  // float probval = uv->GetValue(0.0, 1.0);
+  // return get_size(cdf_secondaryreq, probval);
+  return 300;
 }
 
 uint32_t generateSecondaryResponseSize()
 {
-  float probval = uv->GetValue(0.0, 1.0);
-  //return get_size(cdf_secondaryreply, probval);
-  return 15000;
+  // float probval = uv->GetValue(0.0, 1.0);
+  // return get_size(cdf_secondaryreply, probval);
+  return 0;
 }
 
 uint32_t generateThinkTime()
 {
-  float probval = uv->GetValue(0.0, 1.0);
-  //return get_size(cdf_thinktimes, probval);
-  return 100;
+  // float probval = uv->GetValue(0.0, 1.0);
+  // return get_size(cdf_thinktimes, probval);
+  return 30;
 }
 
 void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t *consecPageCounter);
@@ -230,7 +230,7 @@ void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t 
 
 void checkPrimaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter)
 {
-  std::cout<<"In primary check...\n";
+  // std::cout<<"In primary check...\n";
   if(sendptr->ResponseComplete())
   {
     std::cout<<"Response is complete\n";
@@ -246,10 +246,12 @@ void checkPrimaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, 
 
 void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t* consecPageCounter)
 {
+  std::cout<<"In Secondary request ...\n";
   uint32_t* secondaryRequestCounter = new uint32_t();
   *secondaryRequestCounter = generateNumSecondaryRequests();
   for(uint32_t i = 0; i < *secondaryRequestCounter; i++)
   {
+    std::cout<<"Creating secondary request #"<<*secondaryRequestCounter<<"\n";
     uint32_t secReqSize = generateSecondaryRequestSize();
     uint32_t secRespSize = generateSecondaryResponseSize();
     uint16_t port = GeneratePortNum(browserNum);
@@ -262,7 +264,9 @@ void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_
     //                      InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
     ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
     Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
-    Simulator::Schedule(delta, &checkSecondaryComplete, browserNum, sendptr, consecPageCounter, secondaryRequestCounter);
+    std::cout<<"created pointer\n";
+    Simulator::Schedule(Seconds(10.0), &checkSecondaryComplete, browserNum, sendptr, consecPageCounter, secondaryRequestCounter);
+    std::cout<<"Scheduling checks\n";
   }
 }
 
@@ -273,13 +277,13 @@ void checkSecondaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr
    *secondaryRequestCounter--;
    if(*secondaryRequestCounter == 0)  //Page loaded, think and open new one
    {
-    delete secondaryRequestCounter;
+    // delete secondaryRequestCounter;
     *consecPageCounter--;
     uint32_t thinkTime = generateThinkTime();
     if(*consecPageCounter == 0) // all pages for this sever done. open new site
     {
-      delete consecPageCounter;
-      Simulator::Schedule(Seconds(thinkTime), &User, browserNum);
+      // delete consecPageCounter;
+      // Simulator::Schedule(Seconds(thinkTime), &User, browserNum);
     }
     else
     {
@@ -373,7 +377,7 @@ int main (int argc, char *argv[])
   // Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
   // //std::cout<<"Status of response: "<<sendptr->ResponseComplete()<<std::endl;
   
-  Simulator::Stop(Seconds(300));
+  Simulator::Stop(Seconds(30000));
   Simulator::Run ();
   // std::cout<<"Status of response: "<<sendptr->ResponseComplete()<<std::endl;
   
