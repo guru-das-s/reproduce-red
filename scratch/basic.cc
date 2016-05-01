@@ -149,19 +149,28 @@ void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t 
   // NewSendHelper reqSender("ns3::TcpSocketFactory",
   //                        InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
   ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
+  //sourceApps.Start(Simulator::Now());
+  std::cout<<"sender app started\n";
   Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
-  Simulator::Schedule(delta, &checkPrimaryComplete, browserNum, sendptr, consecPageCounter);
+  std::cout<<"created pointer\n";
+  Simulator::Schedule(Seconds(10), &checkPrimaryComplete, browserNum, sendptr, consecPageCounter);
+  std::cout<<"primary check scheduled\n";
 }
 
 void checkPrimaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter)
 {
+  std::cout<<"In primary check...\n";
   if(sendptr->ResponseComplete())
   {
+    std::cout<<"Response is complete\n";
     InetSocketAddress destServer = ConvertToInetSocketAddress(sendptr->GetDestinationAddress());
     secondaryRequest(browserNum, destServer, consecPageCounter);
   }
   else
-   Simulator::Schedule(delta, &checkPrimaryComplete, browserNum, sendptr, consecPageCounter);
+  {
+    std::cout<<"Incomplete! Scheduling another check\n";
+    Simulator::Schedule(delta, &checkPrimaryComplete, browserNum, sendptr, consecPageCounter);
+  }
 }
 
 void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t* consecPageCounter)
@@ -259,7 +268,7 @@ int main (int argc, char *argv[])
                           InetSocketAddress (Ipv4Address::GetAny (), port));
   sinkApps.Add (sink.Install(servers.Get(0)));
 
-  User(0);
+  Simulator::Schedule(Seconds(10.0), &User, 0);
   // std::cout<<"Created sink\n";
 
   // NewSendHelper sender("ns3::TcpSocketFactory",
@@ -277,7 +286,7 @@ int main (int argc, char *argv[])
   // Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
   // //std::cout<<"Status of response: "<<sendptr->ResponseComplete()<<std::endl;
   
-  Simulator::Stop(Seconds(30));
+  Simulator::Stop(Seconds(300));
   Simulator::Run ();
   // std::cout<<"Status of response: "<<sendptr->ResponseComplete()<<std::endl;
   
