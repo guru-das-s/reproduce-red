@@ -18,6 +18,9 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TuningRed");
 
+// Delete these temp lines:
+Time delta = Seconds(0.005);
+
 typedef struct used_address
 {
   uint32_t node;
@@ -32,6 +35,7 @@ bool operator<(const used_address_t& lhs, const used_address_t& rhs)
 Ptr<UniformRandomVariable> uv;
 std::set<used_address_t> usedAddresses; 
 NodeContainer browsers;
+NodeContainer servers;
 Ipv4InterfaceContainer browserInterfaces;
 Ipv4InterfaceContainer serverInterfaces;
 
@@ -93,6 +97,11 @@ uint32_t generateSecondaryResponseSize()
   return 15000;
 }
 
+uint32_t generateThinkTime()
+{
+  return 100;
+}
+
 InetSocketAddress generateDestServer()
 {
   // pick server node num
@@ -119,7 +128,7 @@ void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t 
                          InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
   ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
   Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
-  Schedule(checkPrimaryComplete(browserNum, sendptr, consecPageCounter), now()+delta);
+  Simulator::Schedule(delta, &checkPrimaryComplete, browserNum, sendptr, consecPageCounter);
 }
 
 void checkPrimaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter)
@@ -130,7 +139,7 @@ void checkPrimaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, 
     secondaryRequest(browserNum, destServer, consecPageCounter);
   }
   else:
-    Schedule(checkPrimaryComplete(browserNum, sendptr, consecPageCounter), now()+delta)
+   Simulator::Schedule(delta, &checkPrimaryComplete, browserNum, sendptr, consecPageCounter);
 }
 
 void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t* consecPageCounter)
@@ -147,7 +156,7 @@ void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_
                          InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
     ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
     Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
-    Schedule(checkSecondaryComplete(browserNum, sendptr, consecPageCounter, secondaryRequestCounter), now()+delta)
+    Simulator::Schedule(delta, &checkSecondaryComplete, browserNum, sendptr, consecPageCounter, secondaryRequestCounter);
   }
 }
 
@@ -164,17 +173,17 @@ void checkSecondaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr
     if(*consecPageCounter == 0) // all pages for this sever done. open new site
     {
       delete consecPageCounter;
-      Schedule(User(browserNum), now()+thinkTime)
+      Simulator::Schedule(Seconds(generateThinkTime()), &User)
     }
     else
     {
       InetSocketAddress destServer = ConvertToInetSocketAddress(sendptr->GetDestinationAddress());
-      Schedule(primaryRequest(browserNum, destServer, consecPageCounter), now()+thinkTime)
+      Simulator::Schedule(Seconds(generateThinkTime()), &primaryRequest, browserNum, destServer, consecPageCounter);
     }
    }
   }
   else
-    Schedule(checkSecondaryComplete(browserNum, sendptr, consecPageCounter, secondaryRequestCounter)
+    Simulator::Schedule(delta, &checkSecondaryComplete, browserNum, sendptr, consecPageCounter, secondaryRequestCounter);
 }
 
 int main (int argc, char *argv[])
@@ -194,6 +203,13 @@ int main (int argc, char *argv[])
   NetDeviceContainer p2pDevices1;
   p2pDevices1 = pointToPoint1.Install(p2pNodes1);
   std::cout<<"Created p2p\n";
+  
+  browsers.Create(1);
+  servers.Create(1);
+  NodeContainer temp;
+  temp.Add(browsers.Get(0));
+  temp.Add(servers.Get(0));
+
 
   InternetStackHelper stack;
   stack.Install(p2pNodes1);
