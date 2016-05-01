@@ -6,7 +6,7 @@
 
 using namespace std;
 
-typedef struct a{
+typedef struct{
   float prob_value;
   int size_value;
 }cdfentry_t;
@@ -18,22 +18,28 @@ struct classcomp {
   }
 };
 
-set<cdfentry_t, classcomp> probs;
+std::set<cdfentry_t, classcomp> cdf_consecpages;
+std::set<cdfentry_t, classcomp> cdf_filesperpage;
+std::set<cdfentry_t, classcomp> cdf_primaryreply;
+std::set<cdfentry_t, classcomp> cdf_primaryreq;
+std::set<cdfentry_t, classcomp> cdf_secondaryreply;
+std::set<cdfentry_t, classcomp> cdf_secondaryreq;
+std::set<cdfentry_t, classcomp> cdf_thinktimes;
 
-void populate_cdf_data(ifstream& file)
+void populate_cdf_data(std::ifstream& file, std::set<cdfentry_t, classcomp>& cdfset)
 {
-  string line;
+  std::string line;
 
   if (file.is_open())
   {
-    while ( getline (file, line) )
+    while ( std::getline (file, line) )
     {
       cout << line << '\n';
       size_t found = line.find(",");
       if (found!=std::string::npos)
-        cout << "Comma found at " << found << '\n';
-      string prob = line.substr (0,found);
-      string sizeval = line.substr(found+1);
+        std::cout << "Comma found at " << found << '\n';
+      std::string prob = line.substr (0,found);
+      std::string sizeval = line.substr(found+1);
 
       cout<<"Prob is: "<<prob<<" and size is: "<<sizeval<<"\n";
       std::string::size_type sz;     // alias of size_t
@@ -42,23 +48,41 @@ void populate_cdf_data(ifstream& file)
       entry.prob_value = stof(line, &sz);
       entry.size_value = stoi(line.substr(sz+1));
       cout<<"Entry Prob is: "<<entry.prob_value<<" and Entry Size is: "<<entry.size_value<<"\n";
-      probs.insert(entry);
+      cdfset.insert(entry);
     }
     cout<<"\n";
     file.close();
   }
 }
 
+int get_size(std::set<cdfentry_t, classcomp>& cdfset, float probval)
+{
+  cdfentry_t dummy;
+  dummy.prob_value = probval;
+
+  return (cdfset.lower_bound(dummy))->size_value;
+}
+
 int main()
 {
-  ifstream file("p4consecpages.txt");
+  std::ifstream consecpages_file("p4consecpages.txt");
+  std::ifstream filesperpage_file("p4filesperpage.txt");
+  std::ifstream primaryreply_file("p4primaryreply.txt");
+  std::ifstream primaryreq_file("p4primaryreq.txt");
+  std::ifstream secondaryreply_file("p4secondaryreply.txt");
+  std::ifstream secondaryreq_file("p4secondaryreq.txt");
+  std::ifstream thinktimes_file("p4thinktimes.txt");
 
-  populate_cdf_data(file);
+  populate_cdf_data(consecpages_file, cdf_consecpages);
+  populate_cdf_data(filesperpage_file, cdf_filesperpage);
+  populate_cdf_data(primaryreply_file, cdf_primaryreply);
+  populate_cdf_data(primaryreq_file, cdf_primaryreq);
+  populate_cdf_data(secondaryreply_file, cdf_secondaryreply);
+  populate_cdf_data(secondaryreq_file, cdf_secondaryreq);
+  populate_cdf_data(thinktimes_file, cdf_thinktimes);
 
-  cdfentry_t dummy;
-  dummy.prob_value = 0.55;
-
-  cout<<"Size for 0.55 is "<<(probs.lower_bound(dummy))->size_value<<"\n";
+  float probval = 0.55;
+  std::cout<<"Size for "<<probval<<" is "<<get_size(cdf_consecpages, probval)<<"\n";
 
   return 0;
 }
