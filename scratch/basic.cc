@@ -18,6 +18,71 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Project1");
 
+void User(browserNum)
+{
+  destServer = generateDestServer()
+  uint32_t* consecPageCounter = new uint32_t();
+  *consecPageCounter = generateConsecPageCounter()
+  primaryRequest(browserNum, address destServer, consecPageCounter)
+}
+
+void primaryRequest(browserNum, address destServer, consecPageCounter)
+{
+  port = PickPort()
+  Pick sendSize and respSizes
+  //Generate primary request
+  A = NewSendApplication(browserNum||port, destServer,  sendSize, respSize)
+  Schedule(checkPrimaryComplete(A, consecPageCounter), now()+delta)
+}
+
+void checkPrimaryComplete(NewSendApplication* A, uint32_t* consecPageCounter)
+{
+  address destServer = extractDestAdd(A)
+  if(A->ResponseComplete())
+    secondaryRequest(destServer, consecPageCounter)
+  else:
+    Schedule(checkPrimaryComplete(A, consecPageCounter), now()+delta)
+}
+
+void secondaryRequest(address destServer, uint32_t* consecPageCounter)
+{
+  uint32_t* secondaryRequestCounter = new uint32_t();
+  *secondaryRequestCounter = generateNumSecondaryRequests()
+  for(int i = 0; i < *secondaryRequestCounter; i++ )
+  {
+    Pick sendSize and respSizes
+    port = PickPort()
+    //Generate secondary request
+    A = NewSendApplication(browserNum||port, destServer,  sendSize, respSize)
+    Schedule(checkSecondaryComplete(A, consecPageCounter, secondaryRequestCounter), now()+delta)
+  }
+}
+
+void checkSecondaryComplete(NewSendApplication*A, uint32_t* consecPageCounter, uint32_t* secondaryRequestCounter)
+{
+  if(A->ResponseComplete())
+  {
+   *secondaryRequestCounter--;
+   if(*secondaryRequestCounter == 0)  //Page loaded, think and open new one
+   {
+    delete secondaryRequestCounter;
+    *consecPageCounter--;
+    uint32_t thinkTime = generateThinkTime();
+    if(*consecPageCounter == 0) // all pages for this sever done. open new site
+    {
+      delete consecPageCounter;
+      Schedule(User(browserNum), now()+thinkTime)
+    }
+    else
+    {
+      Schedule(primaryRequest(), now()+thinkTime)
+    }
+   }
+  }
+  else
+    Schedule(checkSecondaryComplete(A, consecPageCounter, secondaryRequestCounter)
+}
+
 int main (int argc, char *argv[])
 {
   NodeContainer p2pNodes1;
