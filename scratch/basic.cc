@@ -64,8 +64,9 @@ NodeContainer browsers;
 NodeContainer servers;
 Ipv4InterfaceContainer browserInterfaces;
 Ipv4InterfaceContainer serverInterfaces;
-// Delete next line late
-Ipv4InterfaceContainer tempInterfaces;
+Ipv4InterfaceContainer csma1Interfaces;
+Ipv4InterfaceContainer csma2Interfaces;
+
 
 uint16_t GeneratePortNum(uint32_t node)
 {
@@ -190,7 +191,7 @@ InetSocketAddress generateDestServer()
 
   // Switch comments later
   // std::cout<<"Destination Address: "<<(tempInterfaces.GetAddress(1))<<std::endl;
-  return InetSocketAddress (tempInterfaces.GetAddress(1), port);
+  return InetSocketAddress (csma1Interfaces.GetAddress(1), port);
   // return InetSocketAddress(serverInterfaces.GetAddress(server), port);
 }
 
@@ -218,7 +219,7 @@ void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t 
   //Switch comments later
   // std::cout<<"Source Address: "<<tempInterfaces.GetAddress(browserNum)<<", "<<port<<std::endl;
   NewSendHelper reqSender("ns3::TcpSocketFactory",
-                         InetSocketAddress (tempInterfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
+                         InetSocketAddress (csma2Interfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
   // NewSendHelper reqSender("ns3::TcpSocketFactory",
   //                        InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
   ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
@@ -262,13 +263,13 @@ void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_
 
     //Switch comments later
     NewSendHelper reqSender("ns3::TcpSocketFactory",
-                         InetSocketAddress (tempInterfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
+                         InetSocketAddress (csma2Interfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
     // NewSendHelper reqSender("ns3::TcpSocketFactory",
     //                      InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
     ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
     Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
     // std::cout<<"created pointer\n";
-    Simulator::Schedule(Seconds(1.0+i*10), &checkSecondaryComplete, browserNum, sendptr, consecPageCounter, secondaryRequestCounter, Simulator::Now());
+    Simulator::Schedule(Seconds(1), &checkSecondaryComplete, browserNum, sendptr, consecPageCounter, secondaryRequestCounter, Simulator::Now());
     // std::cout<<"Scheduling checks\n";
   }
 }
@@ -330,36 +331,56 @@ int main (int argc, char *argv[])
 
   // NodeContainer p2pNodes1;
   // p2pNodes1.Create(2);
-
-  
   
   browsers.Create(1);
   servers.Create(1);
-
+  //CREATE NODES
   NodeContainer temp;
   temp.Add(browsers.Get(0));
   temp.Add(servers.Get(0));
+  // CREATE ROUTERS
+  temp.Create(2);
 
-  PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("10ms"));
+  // CREATE LINKS
+  NodeContainer n1r1 = NodeContainer(temp.Get(0),temp.Get(2));
+  NodeContainer r1r2 = NodeContainer(temp.Get(2),temp.Get(3));
+  NodeContainer r2n2 = NodeContainer(temp.Get(3),temp.Get(1));
+  // Create Switches
 
-  NetDeviceContainer p2pDevices;
-  p2pDevices = pointToPoint.Install(temp);
-  std::cout<<"Created p2p\n";
+  CsmaHelper csma1;
+  csma1.SetChannelAttribute("DataRate", StringValue ("100Mbps"));
+  csma1.SetChannelAttribute("Delay", StringValue ("10ms"));
+  NetDeviceContainer csmaDevices1 = csma1.Install(n1r1);  
 
+  CsmaHelper csma2;
+  csma2.SetChannelAttribute("DataRate", StringValue ("100Mbps"));
+  csma2.SetChannelAttribute("Delay", StringValue ("10ms"));
+  NetDeviceContainer csmaDevices2 = csma2.Install(r2n2);
+  
+  PointToPointHelper link;
+  link.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
+  link.SetChannelAttribute ("Delay", StringValue ("10ms"));
+  //link.SetQueue();
+  NetDeviceContainer link1 = link.Install(r1r2);
 
   InternetStackHelper stack;
   stack.Install(browsers);
   stack.Install(servers);
+  stack.Install(r1r2);
 
   Ipv4AddressHelper address;
   address.SetBase("10.1.1.0", "255.255.255.0");
-  
-  tempInterfaces = address.Assign(p2pDevices);
+
+  csma1Interfaces = address.Assign(csmaDevices1);
+  address.SetBase("10.1.2.0", "255.255.255.0");
+
+  csma2Interfaces = address.Assign(csmaDevices2);
+  address.SetBase("10.1.3.0", "255.255.255.0");
+
+  Ipv4InterfaceContainer link1Interfaces;
+  link1Interfaces = address.Assign(link1);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-
 
 
   uint16_t port = 5000;
@@ -369,30 +390,12 @@ int main (int argc, char *argv[])
   sinkApps.Add (sink.Install(servers.Get(0)));
   Ptr<NewPacketSink> sinkptr = DynamicCast<NewPacketSink> (sinkApps.Get(0));
 
-  for(int i = 0; i < 500; i++)
+  for(int i = 0; i < 100; i++)
   {
     Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,1)), &User, 0);
   }
-  // std::cout<<"Created sink\n";
-
-  // NewSendHelper sender("ns3::TcpSocketFactory",
-  //                        InetSocketAddress (p2pInterfaces1.GetAddress(0), port), InetSocketAddress (p2pInterfaces1.GetAddress(1), port), 500, 5000);
-  // //sender.SetAttribute ("MaxBytes", UintegerValue (5000));
-  // ApplicationContainer sourceApps = sender.Install (p2pNodes1.Get(0));
-  // std::cout<<"created source\n";
-
-  // sinkApps.Start(Seconds(0));
-  // sinkApps.Stop(Seconds(30));
-  // sourceApps.Start(Seconds(0));
-  // std::cout<<"App started\n";
-  // sourceApps.Stop(Seconds (30));
-
-  // Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
-  // //std::cout<<"Status of response: "<<sendptr->ResponseComplete()<<std::endl;
-  
   Simulator::Stop(Seconds(3000));
   Simulator::Run ();
-  // std::cout<<"Status of response: "<<sendptr->ResponseComplete()<<std::endl;
   
   Simulator::Destroy ();
   std::cout<<"Sim ended\n";
