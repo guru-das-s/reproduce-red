@@ -191,8 +191,9 @@ InetSocketAddress generateDestServer()
 
   // Switch comments later
   // std::cout<<"Destination Address: "<<(tempInterfaces.GetAddress(1))<<std::endl;
-  return InetSocketAddress (csma1Interfaces.GetAddress(1), port);
+  return InetSocketAddress (csma2Interfaces.GetAddress(1), port);
   // return InetSocketAddress(serverInterfaces.GetAddress(server), port);
+
 }
 
 InetSocketAddress ConvertToInetSocketAddress(Address A)
@@ -219,7 +220,7 @@ void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t 
   //Switch comments later
   // std::cout<<"Source Address: "<<tempInterfaces.GetAddress(browserNum)<<", "<<port<<std::endl;
   NewSendHelper reqSender("ns3::TcpSocketFactory",
-                         InetSocketAddress (csma2Interfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
+                         InetSocketAddress (csma1Interfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
   // NewSendHelper reqSender("ns3::TcpSocketFactory",
   //                        InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
   ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
@@ -263,7 +264,7 @@ void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_
 
     //Switch comments later
     NewSendHelper reqSender("ns3::TcpSocketFactory",
-                         InetSocketAddress (csma2Interfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
+                         InetSocketAddress (csma1Interfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
     // NewSendHelper reqSender("ns3::TcpSocketFactory",
     //                      InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
     ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
@@ -334,28 +335,34 @@ int main (int argc, char *argv[])
   
   browsers.Create(1);
   servers.Create(1);
-  //CREATE NODES
-  NodeContainer temp;
-  temp.Add(browsers.Get(0));
-  temp.Add(servers.Get(0));
   // CREATE ROUTERS
-  temp.Create(2);
 
   // CREATE LINKS
-  NodeContainer n1r1 = NodeContainer(temp.Get(0),temp.Get(2));
-  NodeContainer r1r2 = NodeContainer(temp.Get(2),temp.Get(3));
-  NodeContainer r2n2 = NodeContainer(temp.Get(3),temp.Get(1));
+  NodeContainer left;
+  left.Create(1);
+  // TODO: modify to add all browsers
+  left.Add(browsers.Get(0));
+
+  NodeContainer right;
+  right.Create(1);
+  right.Add(servers.Get(0));
+
+  // CREATE ROUTERS
+  NodeContainer r1r2;
+  r1r2.Add(left.Get(0));
+  r1r2.Add(right.Get(0));
+
   // Create Switches
 
   CsmaHelper csma1;
   csma1.SetChannelAttribute("DataRate", StringValue ("100Mbps"));
   csma1.SetChannelAttribute("Delay", StringValue ("10ms"));
-  NetDeviceContainer csmaDevices1 = csma1.Install(n1r1);  
+  NetDeviceContainer csmaDevices1 = csma1.Install(left);  
 
   CsmaHelper csma2;
   csma2.SetChannelAttribute("DataRate", StringValue ("100Mbps"));
   csma2.SetChannelAttribute("Delay", StringValue ("10ms"));
-  NetDeviceContainer csmaDevices2 = csma2.Install(r2n2);
+  NetDeviceContainer csmaDevices2 = csma2.Install(right);
   
   PointToPointHelper link;
   link.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
@@ -381,7 +388,6 @@ int main (int argc, char *argv[])
   link1Interfaces = address.Assign(link1);
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-
 
   uint16_t port = 5000;
   ApplicationContainer sinkApps;
