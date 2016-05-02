@@ -24,7 +24,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TuningRed");
 
 
-uint32_t maxNodes=200;
+uint32_t maxNodes = 7;
 
 typedef struct used_address
 {
@@ -302,7 +302,6 @@ void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_
     param.destServer = destServer;
     param.consecPageCounter = consecPageCounter;
     param.secondaryRequestCounter = secondaryRequestCounter;
-    param.start = Simulator::Now();
     param.func = &checkSecondaryComplete;
     //Generate secondary request
 
@@ -387,11 +386,11 @@ int main (int argc, char *argv[])
 
   Ptr<NewPacketSink> sinkptr = DynamicCast<NewPacketSink> (sinkApps.Get(0));
 
-  for(int i = 0; i < 100; i++)
-  {
-    Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,10)), &User, 0);
-  }
-  Simulator::Stop(Seconds(1000));
+  for(uint32_t browserNum = 0; browserNum < maxNodes; browserNum++)
+    for(int i = 0; i < 100; i++)
+      Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,10)), &User, browserNum);
+
+  Simulator::Stop(Seconds(3000));
   Simulator::Run ();
   Simulator::Destroy ();
   std::cout<<"Sim ended\n";
@@ -404,5 +403,8 @@ int main (int argc, char *argv[])
   std::cout<<"Total data received at browsers: "<<browserRx<<std::endl;
   std::cout<<"Load generated: "<<(browserRx+total)*8/1000<<" bps"<<std::endl;
   std::cout<<"Number of response times recorded: "<<responseTimes.size()<<std::endl;
+
+  // for (int ind=0; ind<responseTimes.size(); ind++)
+  //   std::cout<<"Response time #"<<ind<<": "<<responseTimes[ind]<<"\n";
   
 }

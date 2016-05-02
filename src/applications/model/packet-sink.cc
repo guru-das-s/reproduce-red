@@ -207,6 +207,7 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
     //printf("Received enough. Calling func\n");
     param->resp_size = resp_size;
     param->end = Simulator::Now();
+    // std::cout<<"My stop time is "<<Simulator::Now ().GetSeconds ()<<"\n";
     // call function
     // param->func(*param);
     // std::cout<<"Function ptr now: "<<param->func<<std::endl;

@@ -184,6 +184,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
       // printf("before connect\n");
       m_socket->Connect (m_peer);
       param.start = Simulator::Now();
+      // std::cout<<"My start time is "<<Simulator::Now().GetSeconds()<<"\n";
       PacketSinkHelper sink ("ns3::TcpSocketFactory",
                            InetSocketAddress (Ipv4Address::GetAny (), port+1), param, resp_size);
       ApplicationContainer sinkApps = sink.Install (GetNode());

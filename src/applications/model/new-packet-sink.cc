@@ -238,7 +238,7 @@ void NewPacketSink::HandleRead (Ptr<Socket> socket)
         BulkSendHelper source ("ns3::TcpSocketFactory", InetSocketAddress( InetSocketAddress::ConvertFrom(from).GetIpv4(), InetSocketAddress::ConvertFrom (from).GetPort() + 1 ) );
         source.SetAttribute ("MaxBytes", UintegerValue (response_size));
         ApplicationContainer sourceApps = source.Install(GetNode());
-        sourceApps.Start (Simulator::Now());
+        // sourceApps.Start (Simulator::Now());
         break;
     }
 
