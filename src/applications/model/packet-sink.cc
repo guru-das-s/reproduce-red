@@ -31,6 +31,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/udp-socket-factory.h"
 #include "packet-sink.h"
+#include <iostream>
 
 namespace ns3 {
 
@@ -68,11 +69,22 @@ PacketSink::PacketSink ()
   NS_LOG_FUNCTION (this);
   m_socket = 0;
   m_totalRx = 0;
+  param = new request_param_t();
 }
 
 PacketSink::~PacketSink()
 {
+  delete param;
   NS_LOG_FUNCTION (this);
+}
+
+void PacketSink::SetRequestParam(request_param_t param1)
+{
+  *param = param1;
+}
+void PacketSink::SetRespSize(uint32_t resp_size1)
+{
+  resp_size = resp_size1;
 }
 
 uint32_t PacketSink::GetTotalRx () const
@@ -162,13 +174,14 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
   Address from;
-  while ((packet = socket->RecvFrom (from)))
+  while ((packet = socket->RecvFrom (from)) && m_totalRx < resp_size)
     {
       if (packet->GetSize () == 0)
         { //EOF
           break;
         }
       m_totalRx += packet->GetSize ();
+      // printf("SInk: Read %d so far\n", m_totalRx);
       if (InetSocketAddress::IsMatchingType (from))
         {
           NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
@@ -189,6 +202,16 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
         }
       m_rxTrace (packet, from);
     }
+  if(m_totalRx >= resp_size)
+  {
+    //printf("Received enough. Calling func\n");
+    param->end = Simulator::Now();
+    // call function
+    // param->func(*param);
+    // std::cout<<"Function ptr now: "<<param->func<<std::endl;
+    Simulator::ScheduleNow(param->func, *param);
+    // printf("Scheduled the func\n");
+  }
 }
 
 

@@ -74,6 +74,16 @@ NewSendApplication::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&NewSendApplication::resp_size),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("ReqType",
+                   "Primary request(0), secondary(1) ",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&NewSendApplication::type),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("BrowserNum",
+                   "The browser Number ",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&NewSendApplication::browserNum),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Protocol", "The type of protocol to use.",
                    TypeIdValue (TcpSocketFactory::GetTypeId ()),
                    MakeTypeIdAccessor (&NewSendApplication::m_tid),
@@ -110,6 +120,21 @@ NewSendApplication::SetMaxBytes (uint32_t maxBytes)
   m_maxBytes = maxBytes;
 }
 
+void NewSendApplication::SetConsecPageCounter(uint32_t *ctr)
+{
+  consecPageCounter = ctr;
+}
+
+void NewSendApplication::SetSecondaryRequestCounter(uint32_t *ctr)
+{
+  secondaryRequestCounter = ctr;
+}
+
+void NewSendApplication::SetFunction(void (*func) (request_param_t))
+{
+  param.func = func;
+}
+
 Ptr<Socket>
 NewSendApplication::GetSocket (void) const
 {
@@ -130,6 +155,11 @@ NewSendApplication::DoDispose (void)
 // Application Methods
 void NewSendApplication::StartApplication (void) // Called at time specified by Start
 {
+  param.type = type;
+  param.browserNum = browserNum;
+  param.consecPageCounter = consecPageCounter;
+  param.destServer = InetSocketAddress(InetSocketAddress::ConvertFrom(m_peer).GetIpv4 (), InetSocketAddress::ConvertFrom (m_peer).GetPort ());
+  param.secondaryRequestCounter = secondaryRequestCounter;
   NS_LOG_FUNCTION (this);
   // printf("starting APP\n");
   // Create the socket if not already
@@ -155,14 +185,17 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
         {
           m_socket->Bind (m_local); //m_local
         }
-      PacketSinkHelper sink ("ns3::TcpSocketFactory",
-                           InetSocketAddress (Ipv4Address::GetAny (), port+1));
-      ApplicationContainer sinkApps = sink.Install (GetNode());
-      // sinkApps.Start(Simulator::Now());
-      sinkptr = DynamicCast<PacketSink> (sinkApps.Get(0));
+      
       // printf("Created sink at %d", port+1);
       // printf("before connect\n");
       m_socket->Connect (m_peer);
+      param.start = Simulator::Now();
+      PacketSinkHelper sink ("ns3::TcpSocketFactory",
+                           InetSocketAddress (Ipv4Address::GetAny (), port+1), param, resp_size);
+      ApplicationContainer sinkApps = sink.Install (GetNode());
+      // sinkApps.Start(Simulator::Now());
+      // sinkptr = DynamicCast<PacketSink> (sinkApps.Get(0));
+
       // printf("after connect\n" );
       m_socket->ShutdownRecv ();
       m_socket->SetConnectCallback (
@@ -302,14 +335,15 @@ void NewSendApplication::SendData (void)
 
 bool NewSendApplication::ResponseComplete()
 {
-    if(sinkptr->GetTotalRx() < resp_size)
-    {
-      // printf("SendApp: Response received so far: %d", sinkptr->GetTotalRx());
-      return false;
-    }
-    else
+    // if(sinkptr->GetTotalRx() < resp_size)
+    // {
+    //   // printf("SendApp: Response received so far: %d", sinkptr->GetTotalRx());
+    //   return false;
+    // }
+    // else
        return true;
 } 
+
 
 Address NewSendApplication::GetDestinationAddress()
 {

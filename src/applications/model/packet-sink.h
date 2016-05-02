@@ -26,13 +26,15 @@
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
 #include "ns3/address.h"
+#include "ns3/application-container.h"
+#include "ns3/new-send-application.h"
 
 namespace ns3 {
 
 class Address;
 class Socket;
 class Packet;
-
+struct request_param_t;
 /**
  * \ingroup applications 
  * \defgroup packetsink PacketSink
@@ -65,6 +67,9 @@ class Packet;
  * enabled, it prints out the size of packets and their address.
  * A tracing source to Receive() is also available.
  */
+
+
+
 class PacketSink : public Application 
 {
 public:
@@ -76,6 +81,9 @@ public:
   PacketSink ();
 
   virtual ~PacketSink ();
+
+  void SetRequestParam(request_param_t param1);
+  void SetRespSize(uint32_t resp_size1);
 
   /**
    * \return the total bytes received in this sink app
@@ -129,6 +137,8 @@ private:
   Address         m_local;        //!< Local address to bind to
   uint32_t        m_totalRx;      //!< Total bytes received
   TypeId          m_tid;          //!< Protocol TypeId
+  request_param_t *param;
+  uint32_t        resp_size;
 
   /// Traced Callback: received packets, source address.
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace;

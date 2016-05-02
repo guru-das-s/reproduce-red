@@ -31,8 +31,23 @@
 #include "ns3/net-device.h"
 #include "ns3/node-container.h"
 #include "ns3/application-container.h"
+#include "ns3/new-send-application.h"
+
+// 
+
+// typedef struct request_param 
+// {
+//   bool type;                          // 0 for primary request, 1 for secondary
+//   uint32_t browserNum;
+//   uint32_t* consecPageCounter;
+//   Time start;
+//   InetSocketAddress destServer;
+//   uint32_t* secondaryRequestCounter;  // Only for secondary request
+// } request_param_t;
 
 namespace ns3 {
+struct request_param_t;
+  // struct request_param_t;
 
 /**
  * \ingroup newsend
@@ -52,7 +67,7 @@ public:
    * \param address the address of the remote node to send traffic
    *        to.
    */
-  NewSendHelper (std::string protocol, Address addressS, Address addressD, uint32_t resp_size, uint32_t max_size);
+  NewSendHelper (std::string protocol, Address addressS, Address addressD, uint32_t resp_size, uint32_t max_size, request_param_t param);
 
   /**
    * Helper function used to set the underlying application attributes, 
@@ -102,6 +117,9 @@ private:
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
 
   ObjectFactory m_factory; //!< Object factory.
+  uint32_t* consecPageCounter;
+  uint32_t* secondaryRequestCounter;
+  void (*func) (request_param_t);
 };
 
 } // namespace ns3
