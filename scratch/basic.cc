@@ -24,7 +24,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TuningRed");
 
 // Delete these temp lines:
-Time delta = Seconds(0.05);
+Time delta = Seconds(0.5);
+uint32_t maxNodes=200;
 
 typedef struct used_address
 {
@@ -168,14 +169,14 @@ uint32_t generateSecondaryResponseSize()
 {
   // float probval = uv->GetValue(0.0, 1.0);
   // return get_size(cdf_secondaryreply, probval);
-  return 3000;
+  return 10000;
 }
 
 uint32_t generateThinkTime()
 {
   // float probval = uv->GetValue(0.0, 1.0);
   // return get_size(cdf_thinktimes, probval);
-  return 200;
+  return 20;
 }
 
 void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t *consecPageCounter);
@@ -191,7 +192,7 @@ InetSocketAddress generateDestServer()
 
   // Switch comments later
   // std::cout<<"Destination Address: "<<(tempInterfaces.GetAddress(1))<<std::endl;
-  return InetSocketAddress (csma2Interfaces.GetAddress(1), port);
+  return InetSocketAddress (csma2Interfaces.GetAddress( (int) uv->GetValue(0,maxNodes) ), port);
   // return InetSocketAddress(serverInterfaces.GetAddress(server), port);
 
 }
@@ -330,22 +331,21 @@ int main (int argc, char *argv[])
   populate_cdf_data(secondaryreq_file, cdf_secondaryreq);
   populate_cdf_data(thinktimes_file, cdf_thinktimes);
 
-  // NodeContainer p2pNodes1;
-  // p2pNodes1.Create(2);
-  
-  browsers.Create(1);
-  servers.Create(1);
+  browsers.Create(maxNodes);
+  servers.Create(maxNodes);
   // CREATE ROUTERS
 
   // CREATE LINKS
   NodeContainer left;
   left.Create(1);
-  // TODO: modify to add all browsers
-  left.Add(browsers.Get(0));
 
   NodeContainer right;
   right.Create(1);
-  right.Add(servers.Get(0));
+
+  for(int i = 0; i < maxNodes; i++)  {
+    left.Add(browsers.Get(i));
+    right.Add(servers.Get(i));
+  }
 
   // CREATE ROUTERS
   NodeContainer r1r2;
@@ -356,17 +356,17 @@ int main (int argc, char *argv[])
 
   CsmaHelper csma1;
   csma1.SetChannelAttribute("DataRate", StringValue ("100Mbps"));
-  csma1.SetChannelAttribute("Delay", StringValue ("10ms"));
+  csma1.SetChannelAttribute("Delay", StringValue ("6us"));
   NetDeviceContainer csmaDevices1 = csma1.Install(left);  
 
   CsmaHelper csma2;
   csma2.SetChannelAttribute("DataRate", StringValue ("100Mbps"));
-  csma2.SetChannelAttribute("Delay", StringValue ("10ms"));
+  csma2.SetChannelAttribute("Delay", StringValue ("6us"));
   NetDeviceContainer csmaDevices2 = csma2.Install(right);
   
   PointToPointHelper link;
-  link.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  link.SetChannelAttribute ("Delay", StringValue ("10ms"));
+  link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+  link.SetChannelAttribute ("Delay", StringValue ("37ms"));
   //link.SetQueue();
   NetDeviceContainer link1 = link.Install(r1r2);
 
@@ -393,19 +393,26 @@ int main (int argc, char *argv[])
   ApplicationContainer sinkApps;
   NewPacketSinkHelper sink ("ns3::TcpSocketFactory",
                           InetSocketAddress (Ipv4Address::GetAny (), port));
-  sinkApps.Add (sink.Install(servers.Get(0)));
+  for(int i = 0; i < maxNodes; i++)  {
+    sinkApps.Add(sink.Install(servers.Get(i)));
+  }
   Ptr<NewPacketSink> sinkptr = DynamicCast<NewPacketSink> (sinkApps.Get(0));
 
-  for(int i = 0; i < 100; i++)
+  for(int i = 0; i < 1000; i++)
   {
-    Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,1)), &User, 0);
+    Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,10)), &User, 0);
   }
-  Simulator::Stop(Seconds(3000));
+  Simulator::Stop(Seconds(2000));
   Simulator::Run ();
-  
   Simulator::Destroy ();
   std::cout<<"Sim ended\n";
-  std::cout<<"Total data received by the server"<<sinkptr->GetTotalRx()<<std::endl;
+
+  uint32_t total = 0;
+  for(int i = 0; i < maxNodes; i++) {
+    Ptr<NewPacketSink> sinkptr = DynamicCast<NewPacketSink> (sinkApps.Get(i));
+    total = total + sinkptr->GetTotalRx ();
+  }
+  std::cout<<"Total data received by the server"<<total*8/2000<<std::endl;
 
   std::cout<<"Number of response times recorded: "<<responseTimes.size()<<std::endl;
   
