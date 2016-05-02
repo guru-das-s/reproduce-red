@@ -24,7 +24,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TuningRed");
 
 // Delete these temp lines:
-Time delta = Seconds(0.5);
+Time delta = Seconds(2);
 uint32_t maxNodes=200;
 
 typedef struct used_address
@@ -63,11 +63,8 @@ std::set<used_address_t> usedAddresses;
 std::vector<int64_t> responseTimes;
 NodeContainer browsers;
 NodeContainer servers;
-Ipv4InterfaceContainer browserInterfaces;
-Ipv4InterfaceContainer serverInterfaces;
-Ipv4InterfaceContainer csma1Interfaces;
-Ipv4InterfaceContainer csma2Interfaces;
-
+std::vector<Ipv4Address> browserInterfaces(maxNodes*sizeof(Ipv4Address));
+std::vector<Ipv4Address> serverInterfaces(maxNodes*sizeof(Ipv4Address));
 
 uint16_t GeneratePortNum(uint32_t node)
 {
@@ -191,8 +188,8 @@ InetSocketAddress generateDestServer()
   uint16_t port = 5000;
 
   // Switch comments later
-  // std::cout<<"Destination Address: "<<(tempInterfaces.GetAddress(1))<<std::endl;
-  return InetSocketAddress (csma2Interfaces.GetAddress( (int) uv->GetValue(0,maxNodes) ), port);
+  std::cout<<"Destination Address: "<<(serverInterfaces[(int) uv->GetValue(0,maxNodes)])<<std::endl;
+  return InetSocketAddress (serverInterfaces[(int) uv->GetValue(0,maxNodes)], port);
   // return InetSocketAddress(serverInterfaces.GetAddress(server), port);
 
 }
@@ -221,7 +218,7 @@ void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t 
   //Switch comments later
   // std::cout<<"Source Address: "<<tempInterfaces.GetAddress(browserNum)<<", "<<port<<std::endl;
   NewSendHelper reqSender("ns3::TcpSocketFactory",
-                         InetSocketAddress (csma1Interfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
+                         InetSocketAddress (browserInterfaces[browserNum], port), destServer, primaryRespSize, primaryReqSize);
   // NewSendHelper reqSender("ns3::TcpSocketFactory",
   //                        InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
   ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
@@ -264,10 +261,10 @@ void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_
     //Generate secondary request
 
     //Switch comments later
-    NewSendHelper reqSender("ns3::TcpSocketFactory",
-                         InetSocketAddress (csma1Interfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
-    // NewSendHelper reqSender("ns3::TcpSocketFactory",
-    //                      InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
+    //NewSendHelper reqSender("ns3::TcpSocketFactory",
+    //                     InetSocketAddress (dumbbell.GetLeftIpv4Address(browserNum), port), destServer, secRespSize, secReqSize);
+     NewSendHelper reqSender("ns3::TcpSocketFactory",
+                          InetSocketAddress (browserInterfaces[browserNum], port), destServer, secRespSize, secReqSize);
     ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
     Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
     // std::cout<<"created pointer\n";
@@ -331,78 +328,43 @@ int main (int argc, char *argv[])
   populate_cdf_data(secondaryreq_file, cdf_secondaryreq);
   populate_cdf_data(thinktimes_file, cdf_thinktimes);
 
-  browsers.Create(maxNodes);
-  servers.Create(maxNodes);
-  // CREATE ROUTERS
-
-  // CREATE LINKS
-  NodeContainer left;
-  left.Create(1);
-
-  NodeContainer right;
-  right.Create(1);
-
-  for(int i = 0; i < maxNodes; i++)  {
-    left.Add(browsers.Get(i));
-    right.Add(servers.Get(i));
-  }
-
-  // CREATE ROUTERS
-  NodeContainer r1r2;
-  r1r2.Add(left.Get(0));
-  r1r2.Add(right.Get(0));
-
-  // Create Switches
-
-  CsmaHelper csma1;
-  csma1.SetChannelAttribute("DataRate", StringValue ("100Mbps"));
-  csma1.SetChannelAttribute("Delay", StringValue ("6us"));
-  NetDeviceContainer csmaDevices1 = csma1.Install(left);  
-
-  CsmaHelper csma2;
-  csma2.SetChannelAttribute("DataRate", StringValue ("100Mbps"));
-  csma2.SetChannelAttribute("Delay", StringValue ("6us"));
-  NetDeviceContainer csmaDevices2 = csma2.Install(right);
-  
   PointToPointHelper link;
   link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
-  link.SetChannelAttribute ("Delay", StringValue ("37ms"));
-  //link.SetQueue();
-  NetDeviceContainer link1 = link.Install(r1r2);
+  link.SetChannelAttribute ("Delay", StringValue ("13ms"));
+  PointToPointHelper link2;
+  link2.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+  link2.SetChannelAttribute ("Delay", StringValue ("13ms"));
 
+  PointToPointDumbbellHelper dumbbell (maxNodes, link, maxNodes, link, link2);
   InternetStackHelper stack;
-  stack.Install(browsers);
-  stack.Install(servers);
-  stack.Install(r1r2);
+  dumbbell.InstallStack (stack);
 
-  Ipv4AddressHelper address;
-  address.SetBase("10.1.1.0", "255.255.255.0");
-
-  csma1Interfaces = address.Assign(csmaDevices1);
-  address.SetBase("10.1.2.0", "255.255.255.0");
-
-  csma2Interfaces = address.Assign(csmaDevices2);
-  address.SetBase("10.1.3.0", "255.255.255.0");
-
-  Ipv4InterfaceContainer link1Interfaces;
-  link1Interfaces = address.Assign(link1);
-
+  for(int i = 0; i < maxNodes; i++)  {
+    browsers.Add(dumbbell.GetLeft(i));
+    servers.Add(dumbbell.GetRight(i));
+  }
+  dumbbell.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.1.0", "255.255.255.0"),
+                            Ipv4AddressHelper ("10.2.1.0", "255.255.255.0"),
+                            Ipv4AddressHelper ("10.3.1.0", "255.255.255.0"));
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-
   uint16_t port = 5000;
   ApplicationContainer sinkApps;
   NewPacketSinkHelper sink ("ns3::TcpSocketFactory",
                           InetSocketAddress (Ipv4Address::GetAny (), port));
   for(int i = 0; i < maxNodes; i++)  {
     sinkApps.Add(sink.Install(servers.Get(i)));
-  }
+    browserInterfaces[i] = dumbbell.GetLeftIpv4Address(i);
+    serverInterfaces[i] = dumbbell.GetRightIpv4Address(i);
+  } 
+  std::cout<<"Installed apps "<<std::endl;
+
   Ptr<NewPacketSink> sinkptr = DynamicCast<NewPacketSink> (sinkApps.Get(0));
 
-  for(int i = 0; i < 1000; i++)
+  for(int i = 0; i < 100; i++)
   {
     Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,10)), &User, 0);
   }
-  Simulator::Stop(Seconds(2000));
+  Simulator::Stop(Seconds(3000));
   Simulator::Run ();
   Simulator::Destroy ();
   std::cout<<"Sim ended\n";
@@ -412,7 +374,7 @@ int main (int argc, char *argv[])
     Ptr<NewPacketSink> sinkptr = DynamicCast<NewPacketSink> (sinkApps.Get(i));
     total = total + sinkptr->GetTotalRx ();
   }
-  std::cout<<"Total data received by the server"<<total*8/2000<<std::endl;
+  std::cout<<"Total data received by the server"<<total*8/3000<<std::endl;
 
   std::cout<<"Number of response times recorded: "<<responseTimes.size()<<std::endl;
   
