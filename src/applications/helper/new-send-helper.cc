@@ -40,7 +40,6 @@ NewSendHelper::NewSendHelper (std::string protocol, Address addressS, Address ad
   m_factory.Set ("Local", AddressValue (addressS));
   m_factory.Set ("RecvBytes", UintegerValue(resp_size));
   m_factory.Set ("MaxBytes", UintegerValue(max_size));
-  m_factory.Set("ReqType", UintegerValue(param.type));
   m_factory.Set("BrowserNum", UintegerValue(param.browserNum));
 }
 

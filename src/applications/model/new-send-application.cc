@@ -74,11 +74,6 @@ NewSendApplication::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&NewSendApplication::resp_size),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("ReqType",
-                   "Primary request(0), secondary(1) ",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&NewSendApplication::type),
-                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("BrowserNum",
                    "The browser Number ",
                    UintegerValue (0),
@@ -155,7 +150,6 @@ NewSendApplication::DoDispose (void)
 // Application Methods
 void NewSendApplication::StartApplication (void) // Called at time specified by Start
 {
-  param.type = type;
   param.browserNum = browserNum;
   param.consecPageCounter = consecPageCounter;
   param.destServer = InetSocketAddress(InetSocketAddress::ConvertFrom(m_peer).GetIpv4 (), InetSocketAddress::ConvertFrom (m_peer).GetPort ());

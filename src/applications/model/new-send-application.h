@@ -44,14 +44,15 @@ class Time;
 class InetSocketAddress;
 struct request_param_t
 {
-  uint32_t type;                          // 0 for primary request, 1 for secondary
+  //uint32_t type;                          // 0 for primary request, 1 for secondary
   uint32_t browserNum;
   uint32_t* consecPageCounter;
   Time start;
   Time end;
   InetSocketAddress destServer;
   uint32_t* secondaryRequestCounter;  // Only for secondary request
-  void (*func) (request_param_t);  
+  void (*func) (request_param_t); 
+  uint32_t resp_size; 
   request_param_t()
   : destServer(200)
   {

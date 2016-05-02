@@ -75,6 +75,7 @@ NodeContainer browsers;
 NodeContainer servers;
 std::vector<Ipv4Address> browserInterfaces(maxNodes*sizeof(Ipv4Address));
 std::vector<Ipv4Address> serverInterfaces(maxNodes*sizeof(Ipv4Address));
+double browserRx = 0;
 
 uint16_t GeneratePortNum(uint32_t node)
 {
@@ -228,7 +229,7 @@ void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t 
   //Switch comments later
   // std::cout<<"Source Address: "<<tempInterfaces.GetAddress(browserNum)<<", "<<port<<std::endl;
   request_param_t param;
-  param.type = 0;
+  //param.type = 0;
   param.browserNum = browserNum;
   param.destServer = destServer;
   param.consecPageCounter = consecPageCounter;
@@ -253,6 +254,7 @@ static void checkPrimaryComplete(request_param_t param)
 {
   //std::cout<<"In check primary complete"<<std::endl;
   responseTimes.push_back(param.end.GetMilliSeconds() - param.start.GetMilliSeconds());
+  browserRx += double(param.resp_size);
   secondaryRequest(param.browserNum, param.destServer, param.consecPageCounter);
 }
 
@@ -269,7 +271,7 @@ void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_
     uint16_t port = GeneratePortNum(browserNum);
 
     request_param_t param;
-    param.type = 1;
+    //param.type = 1;
     param.browserNum = browserNum;
     param.destServer = destServer;
     param.consecPageCounter = consecPageCounter;
@@ -293,6 +295,7 @@ void checkSecondaryComplete(request_param_t param)
 {
   //std::cout<<"In check sec complete"<<std::endl;
   responseTimes.push_back(param.end.GetMilliSeconds() - param.start.GetMilliSeconds());
+  browserRx += double(param.resp_size);
   // std::cout<<"Consec pg ctr"<<*consecPageCounter<<std::endl;
   // std::cout<<"Sec req ctr: "<<*secondaryRequestCounter<<std::endl;  
   uint32_t* secondaryRequestCounter = param.secondaryRequestCounter;
@@ -352,7 +355,7 @@ int main (int argc, char *argv[])
   InternetStackHelper stack;
   dumbbell.InstallStack (stack);
 
-  for(int i = 0; i < maxNodes; i++)  {
+  for(uint32_t i = 0; i < maxNodes; i++)  {
     browsers.Add(dumbbell.GetLeft(i));
     servers.Add(dumbbell.GetRight(i));
   }
@@ -364,7 +367,7 @@ int main (int argc, char *argv[])
   ApplicationContainer sinkApps;
   NewPacketSinkHelper sink ("ns3::TcpSocketFactory",
                           InetSocketAddress (Ipv4Address::GetAny (), port));
-  for(int i = 0; i < maxNodes; i++)  {
+  for(uint32_t i = 0; i < maxNodes; i++)  {
     sinkApps.Add(sink.Install(servers.Get(i)));
     browserInterfaces[i] = dumbbell.GetLeftIpv4Address(i);
     serverInterfaces[i] = dumbbell.GetRightIpv4Address(i);
@@ -377,18 +380,18 @@ int main (int argc, char *argv[])
   {
     Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,10)), &User, 0);
   }
-  Simulator::Stop(Seconds(10000));
+  Simulator::Stop(Seconds(1000));
   Simulator::Run ();
   Simulator::Destroy ();
   std::cout<<"Sim ended\n";
 
   uint32_t total = 0;
-  for(int i = 0; i < maxNodes; i++) {
+  for(uint32_t i = 0; i < maxNodes; i++) {
     Ptr<NewPacketSink> sinkptr = DynamicCast<NewPacketSink> (sinkApps.Get(i));
     total = total + sinkptr->GetTotalRx ();
   }
-  std::cout<<"Load generated: "<<total*8/10000<<" bps"<<std::endl;
-
+  std::cout<<"Total data received at browsers: "<<browserRx<<std::endl;
+  std::cout<<"Load generated: "<<(browserRx+total)*8/1000<<" bps"<<std::endl;
   std::cout<<"Number of response times recorded: "<<responseTimes.size()<<std::endl;
   
 }

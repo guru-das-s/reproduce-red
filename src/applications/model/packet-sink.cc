@@ -205,6 +205,7 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
   if(m_totalRx >= resp_size)
   {
     //printf("Received enough. Calling func\n");
+    param->resp_size = resp_size;
     param->end = Simulator::Now();
     // call function
     // param->func(*param);
