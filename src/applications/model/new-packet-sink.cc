@@ -190,7 +190,7 @@ void NewPacketSink::HandleRead (Ptr<Socket> socket)
       break;
     }
     m_totalRx += packet->GetSize ();
-    printf("Sink: Received %u bytes so far\n", m_totalRx);
+    // printf("Sink: Received %u bytes so far\n", m_totalRx);
 
     if (InetSocketAddress::IsMatchingType (from))
     {
@@ -217,7 +217,7 @@ void NewPacketSink::HandleRead (Ptr<Socket> socket)
 
     /* Read opcode*/
     packet->CopyData(opcode, 1);
-    printf("Sink: Opcode is %d\n", *opcode);
+    // printf("Sink: Opcode is %d\n", *opcode);
 
     switch(*opcode){
       case 0: // Ignore
@@ -228,7 +228,7 @@ void NewPacketSink::HandleRead (Ptr<Socket> socket)
         packet->CopyData(packet_contents, 5);
         response_size = convert_uint8_uint32(packet_contents);
         NS_LOG_INFO("Read response size: "<<response_size);
-        printf("Sink: resp size is %u\n", response_size);
+        // printf("Sink: resp size is %u\n", response_size);
         /**
          * Create Bulk Send Helper to transfer the 
          * requested amount of data

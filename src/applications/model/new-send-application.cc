@@ -131,7 +131,7 @@ NewSendApplication::DoDispose (void)
 void NewSendApplication::StartApplication (void) // Called at time specified by Start
 {
   NS_LOG_FUNCTION (this);
-  printf("starting APP\n");
+  // printf("starting APP\n");
   // Create the socket if not already
   if (!m_socket)
     {
@@ -146,7 +146,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
                           "NewSend requires SOCK_STREAM or SOCK_SEQPACKET. "
                           "In other words, use TCP instead of UDP.");
         }
-      printf("before bind\n");
+      // printf("before bind\n");
       if (Inet6SocketAddress::IsMatchingType (m_peer))
         {
           m_socket->Bind6 ();
@@ -160,10 +160,10 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
       ApplicationContainer sinkApps = sink.Install (GetNode());
       // sinkApps.Start(Simulator::Now());
       sinkptr = DynamicCast<PacketSink> (sinkApps.Get(0));
-      printf("Created sink at %d", port+1);
-      printf("before connect\n");
+      // printf("Created sink at %d", port+1);
+      // printf("before connect\n");
       m_socket->Connect (m_peer);
-      printf("after connect\n" );
+      // printf("after connect\n" );
       m_socket->ShutdownRecv ();
       m_socket->SetConnectCallback (
         MakeCallback (&NewSendApplication::ConnectionSucceeded, this),
@@ -175,7 +175,7 @@ void NewSendApplication::StartApplication (void) // Called at time specified by 
       // m_socket->SetRecvCallback (MakeCallback (&NewSendApplication::HandleRead, this));
       //Need to add receive callback here. Increments the response_bytes counter. Once we receive resp_size amount of data, the application will send the secondary reqs
     }
-  printf("connection status: %d",(int) m_connected);
+  // printf("connection status: %d",(int) m_connected);
   // if (m_connected)
   //   {
   //     SendData ();
@@ -223,7 +223,7 @@ void NewSendApplication::SendData (void)
   uint32_t request_size = m_maxBytes;
   uint32_t toSend = m_sendSize;
   uint8_t *buffer = new uint8_t[toSend];
-  printf("To send size: %d\n", toSend);
+  // printf("To send size: %d\n", toSend);
   // Opcodes 
   // 0: extra data. don't read the rest of the packet. 
   // 1: primary request
@@ -235,15 +235,17 @@ void NewSendApplication::SendData (void)
   }
   if(request_size < toSend)
   {
-    printf("request size %d\n", request_size);
+    // printf("request size %d\n", request_size);
     toSend = request_size;
   }
-  printf("in senddata\n");
+  if (resp_size == 0)
+    resp_size++;
+  // printf("in senddata\n");
   // Create sink at current port + 1
 
 
   // First packet contains opcode 1,resp_size (total 5 bytes)
-  printf("SendApp: Sending request for %d bytes with opcode 1\n", (int) resp_size);
+  // printf("SendApp: Sending request for %d bytes with opcode 1\n", (int) resp_size);
   create_packet_payload(resp_size, opcode, buffer, toSend);
   Ptr<Packet> packet = Create<Packet> (buffer, toSend);
   int actual = m_socket->Send (packet);
@@ -333,7 +335,7 @@ Address NewSendApplication::GetDestinationAddress()
 
 void NewSendApplication::ConnectionSucceeded (Ptr<Socket> socket)
 {
-  printf("ConnectionSucceeded\n");
+  // printf("ConnectionSucceeded\n");
   NS_LOG_FUNCTION (this << socket);
   NS_LOG_LOGIC ("NewSendApplication Connection succeeded");
   m_connected = true;
@@ -343,7 +345,7 @@ void NewSendApplication::ConnectionSucceeded (Ptr<Socket> socket)
 
 void NewSendApplication::ConnectionFailed (Ptr<Socket> socket)
 {
-  printf("ConnectionFailed\n");
+  // printf("ConnectionFailed\n");
   NS_LOG_FUNCTION (this << socket);
   NS_LOG_LOGIC ("NewSendApplication, Connection Failed");
 }

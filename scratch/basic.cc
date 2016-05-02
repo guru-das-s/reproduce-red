@@ -15,6 +15,7 @@
 #include <iostream>
 #include <set>
 #include <unordered_map>
+#include <vector>
 #include <string>
 #include <fstream>
 
@@ -23,7 +24,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TuningRed");
 
 // Delete these temp lines:
-Time delta = Seconds(0.5);
+Time delta = Seconds(0.05);
 
 typedef struct used_address
 {
@@ -58,6 +59,7 @@ std::set<cdfentry_t, classcomp> cdf_thinktimes;
 
 Ptr<UniformRandomVariable> uv;
 std::set<used_address_t> usedAddresses; 
+std::vector<int64_t> responseTimes;
 NodeContainer browsers;
 NodeContainer servers;
 Ipv4InterfaceContainer browserInterfaces;
@@ -130,7 +132,7 @@ uint32_t generateConsecPageCounter()
 {
   // float probval = uv->GetValue(0.0, 1.0);
   // return get_size(cdf_consecpages, probval);
-  return 1;
+  return 2;
 }
 
 uint32_t generatePrimaryRequestSize()
@@ -151,7 +153,7 @@ uint32_t generateNumSecondaryRequests()
 {
   // float probval = uv->GetValue(0.0, 1.0);
   // return get_size(cdf_filesperpage, probval);
-  return 2;
+  return 5;
 }
 
 uint32_t generateSecondaryRequestSize()
@@ -165,21 +167,20 @@ uint32_t generateSecondaryResponseSize()
 {
   // float probval = uv->GetValue(0.0, 1.0);
   // return get_size(cdf_secondaryreply, probval);
-  return 0;
+  return 3000;
 }
 
 uint32_t generateThinkTime()
 {
   // float probval = uv->GetValue(0.0, 1.0);
   // return get_size(cdf_thinktimes, probval);
-  return 30;
+  return 200;
 }
 
 void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t *consecPageCounter);
-void checkPrimaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter);
+void checkPrimaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter, Time start);
 void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t* consecPageCounter);
-void checkSecondaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter, uint32_t* secondaryRequestCounter);
-
+void checkSecondaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter, uint32_t* secondaryRequestCounter, Time start);
 
 InetSocketAddress generateDestServer()
 {
@@ -188,7 +189,7 @@ InetSocketAddress generateDestServer()
   uint16_t port = 5000;
 
   // Switch comments later
-  std::cout<<"Destination Address: "<<(tempInterfaces.GetAddress(1))<<std::endl;
+  // std::cout<<"Destination Address: "<<(tempInterfaces.GetAddress(1))<<std::endl;
   return InetSocketAddress (tempInterfaces.GetAddress(1), port);
   // return InetSocketAddress(serverInterfaces.GetAddress(server), port);
 }
@@ -197,9 +198,10 @@ InetSocketAddress ConvertToInetSocketAddress(Address A)
 {
   return InetSocketAddress(InetSocketAddress::ConvertFrom(A).GetIpv4 (), InetSocketAddress::ConvertFrom (A).GetPort ());
 }
-
+int user_count = 0;
 void User(uint32_t browserNum)
 {
+  std::cout<<"User #"<<user_count++<<std::endl;
   InetSocketAddress destServer = generateDestServer();
   uint32_t* consecPageCounter = new uint32_t();
   *consecPageCounter = generateConsecPageCounter();
@@ -214,44 +216,45 @@ void primaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t 
   //Generate primary request
 
   //Switch comments later
-  std::cout<<"Source Address: "<<tempInterfaces.GetAddress(browserNum)<<", "<<port<<std::endl;
+  // std::cout<<"Source Address: "<<tempInterfaces.GetAddress(browserNum)<<", "<<port<<std::endl;
   NewSendHelper reqSender("ns3::TcpSocketFactory",
                          InetSocketAddress (tempInterfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
   // NewSendHelper reqSender("ns3::TcpSocketFactory",
   //                        InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, primaryRespSize, primaryReqSize);
   ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
   //sourceApps.Start(Simulator::Now());
-  std::cout<<"sender app started\n";
+  // std::cout<<"sender app started\n";
   Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
-  std::cout<<"created pointer\n";
-  Simulator::Schedule(Seconds(10), &checkPrimaryComplete, browserNum, sendptr, consecPageCounter);
-  std::cout<<"primary check scheduled\n";
+  // std::cout<<"created pointer\n";
+  Simulator::Schedule(Seconds(1), &checkPrimaryComplete, browserNum, sendptr, consecPageCounter, Simulator::Now());
+  // std::cout<<"primary check scheduled\n";
 }
 
-void checkPrimaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter)
+void checkPrimaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter, Time start)
 {
   // std::cout<<"In primary check...\n";
   if(sendptr->ResponseComplete())
   {
-    std::cout<<"Response is complete\n";
+    // std::cout<<"Response is complete\n";
+    responseTimes.push_back(Simulator::Now().GetMilliSeconds() - start.GetMilliSeconds());
     InetSocketAddress destServer = ConvertToInetSocketAddress(sendptr->GetDestinationAddress());
     secondaryRequest(browserNum, destServer, consecPageCounter);
   }
   else
   {
-    std::cout<<"Incomplete! Scheduling another check\n";
-    Simulator::Schedule(delta, &checkPrimaryComplete, browserNum, sendptr, consecPageCounter);
+    // std::cout<<"Incomplete! Scheduling another check\n";
+    Simulator::Schedule(delta, &checkPrimaryComplete, browserNum, sendptr, consecPageCounter, start);
   }
 }
 
 void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_t* consecPageCounter)
 {
-  std::cout<<"In Secondary request ...\n";
+  // std::cout<<"In Secondary request ...\n";
   uint32_t* secondaryRequestCounter = new uint32_t();
   *secondaryRequestCounter = generateNumSecondaryRequests();
   for(uint32_t i = 0; i < *secondaryRequestCounter; i++)
   {
-    std::cout<<"Creating secondary request #"<<*secondaryRequestCounter<<"\n";
+    // std::cout<<"Creating secondary request #"<<*secondaryRequestCounter<<"\n";
     uint32_t secReqSize = generateSecondaryRequestSize();
     uint32_t secRespSize = generateSecondaryResponseSize();
     uint16_t port = GeneratePortNum(browserNum);
@@ -264,26 +267,32 @@ void secondaryRequest(uint32_t browserNum, InetSocketAddress destServer, uint32_
     //                      InetSocketAddress (browserInterfaces.GetAddress(browserNum), port), destServer, secRespSize, secReqSize);
     ApplicationContainer sourceApps = reqSender.Install (browsers.Get(browserNum));
     Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
-    std::cout<<"created pointer\n";
-    Simulator::Schedule(Seconds(10.0), &checkSecondaryComplete, browserNum, sendptr, consecPageCounter, secondaryRequestCounter);
-    std::cout<<"Scheduling checks\n";
+    // std::cout<<"created pointer\n";
+    Simulator::Schedule(Seconds(1.0+i*10), &checkSecondaryComplete, browserNum, sendptr, consecPageCounter, secondaryRequestCounter, Simulator::Now());
+    // std::cout<<"Scheduling checks\n";
   }
 }
 
-void checkSecondaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter, uint32_t* secondaryRequestCounter)
+void checkSecondaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr, uint32_t* consecPageCounter, uint32_t* secondaryRequestCounter, Time start)
 {
+
   if(sendptr->ResponseComplete())
   {
-   *secondaryRequestCounter--;
+    responseTimes.push_back(Simulator::Now().GetMilliSeconds() - start.GetMilliSeconds());
+    // std::cout<<"Consec pg ctr"<<*consecPageCounter<<std::endl;
+    // std::cout<<"Sec req ctr: "<<*secondaryRequestCounter<<std::endl;  
+   (*secondaryRequestCounter)--;
+   // std::cout<<"Sec req ctr after --: "<<*secondaryRequestCounter<<std::endl;
    if(*secondaryRequestCounter == 0)  //Page loaded, think and open new one
    {
     // delete secondaryRequestCounter;
-    *consecPageCounter--;
+    (*consecPageCounter)--;
     uint32_t thinkTime = generateThinkTime();
     if(*consecPageCounter == 0) // all pages for this sever done. open new site
     {
       // delete consecPageCounter;
-      // Simulator::Schedule(Seconds(thinkTime), &User, browserNum);
+      Simulator::Schedule(Seconds(thinkTime), &User, browserNum);
+      std::cout<<"User done with this site\n";
     }
     else
     {
@@ -293,7 +302,7 @@ void checkSecondaryComplete(uint32_t browserNum, Ptr<NewSendApplication> sendptr
    }
   }
   else
-    Simulator::Schedule(delta, &checkSecondaryComplete, browserNum, sendptr, consecPageCounter, secondaryRequestCounter);
+    Simulator::Schedule(delta, &checkSecondaryComplete, browserNum, sendptr, consecPageCounter, secondaryRequestCounter, start);
 }
 
 int main (int argc, char *argv[])
@@ -358,8 +367,12 @@ int main (int argc, char *argv[])
   NewPacketSinkHelper sink ("ns3::TcpSocketFactory",
                           InetSocketAddress (Ipv4Address::GetAny (), port));
   sinkApps.Add (sink.Install(servers.Get(0)));
+  Ptr<NewPacketSink> sinkptr = DynamicCast<NewPacketSink> (sinkApps.Get(0));
 
-  Simulator::Schedule(Seconds(10.0), &User, 0);
+  for(int i = 0; i < 500; i++)
+  {
+    Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,1)), &User, 0);
+  }
   // std::cout<<"Created sink\n";
 
   // NewSendHelper sender("ns3::TcpSocketFactory",
@@ -377,10 +390,14 @@ int main (int argc, char *argv[])
   // Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
   // //std::cout<<"Status of response: "<<sendptr->ResponseComplete()<<std::endl;
   
-  Simulator::Stop(Seconds(30000));
+  Simulator::Stop(Seconds(3000));
   Simulator::Run ();
   // std::cout<<"Status of response: "<<sendptr->ResponseComplete()<<std::endl;
   
   Simulator::Destroy ();
   std::cout<<"Sim ended\n";
+  std::cout<<"Total data received by the server"<<sinkptr->GetTotalRx()<<std::endl;
+
+  std::cout<<"Number of response times recorded: "<<responseTimes.size()<<std::endl;
+  
 }
