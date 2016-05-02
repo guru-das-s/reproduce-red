@@ -24,6 +24,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/node-container.h"
 #include "ns3/application-container.h"
+#include "ns3/new-send-application.h"
 
 namespace ns3 {
 
@@ -32,6 +33,9 @@ namespace ns3 {
  * \brief A helper to make it easier to instantiate an ns3::PacketSinkApplication
  * on a set of nodes.
  */
+
+struct request_param_t;
+
 class PacketSinkHelper
 {
 public:
@@ -45,7 +49,7 @@ public:
    * \param address the address of the sink,
    *
    */
-  PacketSinkHelper (std::string protocol, Address address);
+  PacketSinkHelper (std::string protocol, Address address, request_param_t param, uint32_t resp_size);
 
   /**
    * Helper function used to set the underlying application attributes.
@@ -93,6 +97,8 @@ private:
    */
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
   ObjectFactory m_factory; //!< Object factory.
+  request_param_t *param;
+  uint32_t resp_size;
 };
 
 } // namespace ns3

@@ -21,17 +21,52 @@
 #ifndef NEW_SEND_APPLICATION_H
 #define NEW_SEND_APPLICATION_H
 
+#include "ns3/core-module.h"
+#include "ns3/network-module.h"
+#include "ns3/nstime.h"
 #include "ns3/address.h"
 #include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
-#include "ns3/packet-sink.h"
+// #include "ns3/packet-sink.h"
+#include "ns3/internet-module.h"
+#include "ns3/csma-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/point-to-point-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/ipv4-global-routing-helper.h"
+// #include "req-param-t.h"
+
 
 namespace ns3 {
+class Time;
+class InetSocketAddress;
+struct request_param_t
+{
+  uint32_t type;                          // 0 for primary request, 1 for secondary
+  uint32_t browserNum;
+  uint32_t* consecPageCounter;
+  Time start;
+  Time end;
+  InetSocketAddress destServer;
+  uint32_t* secondaryRequestCounter;  // Only for secondary request
+  void (*func) (request_param_t);  
+  request_param_t()
+  : destServer(200)
+  {
+    // destServer = InetSocketAddress(200);
+  };
+};// request_param_t;
 
 class Address;
 class Socket;
+// {
+//    data 
+// };
+
+
+
 
 /**
  * \ingroup applications
@@ -66,6 +101,7 @@ class Socket;
  * UDP sockets can not be used.
  *
  */
+
 class NewSendApplication : public Application
 {
 public:
@@ -93,6 +129,9 @@ public:
    * \param maxBytes the upper bound of bytes to send
    */
   void SetMaxBytes (uint32_t maxBytes);
+  void SetConsecPageCounter(uint32_t *ctr);
+  void SetSecondaryRequestCounter(uint32_t *ctr);
+  void SetFunction(void (*func) (request_param_t));
 
   /**
    * \brief Get the socket this application is attached to.
@@ -101,6 +140,7 @@ public:
   Ptr<Socket> GetSocket (void) const;
   bool ResponseComplete();
   Address GetDestinationAddress();
+
 
 protected:
   virtual void DoDispose (void);
@@ -126,7 +166,14 @@ private:
   bool            request_complete;
   Address         m_local;        //!< Local address to bind to
   uint16_t        port;           // Local port
-  Ptr<PacketSink> sinkptr;
+  // Ptr<PacketSink> sinkptr;
+
+
+  request_param_t param;          // To be passed to PacketSink
+  uint32_t type;                          // 0 for primary request, 1 for secondary
+  uint32_t browserNum;
+  uint32_t* consecPageCounter;
+  uint32_t* secondaryRequestCounter;  // Only for secondary request
   /// Traced Callback: sent packets
   TracedCallback<Ptr<const Packet> > m_txTrace;
 

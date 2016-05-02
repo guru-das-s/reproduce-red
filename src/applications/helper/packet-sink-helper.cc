@@ -25,11 +25,14 @@
 
 namespace ns3 {
 
-PacketSinkHelper::PacketSinkHelper (std::string protocol, Address address)
+PacketSinkHelper::PacketSinkHelper (std::string protocol, Address address, request_param_t param1, uint32_t resp_size1)
 {
   m_factory.SetTypeId ("ns3::PacketSink");
   m_factory.Set ("Protocol", StringValue (protocol));
   m_factory.Set ("Local", AddressValue (address));
+  param = new request_param_t();
+  *param = param1;
+  resp_size = resp_size1;
 }
 
 void 
@@ -41,7 +44,12 @@ PacketSinkHelper::SetAttribute (std::string name, const AttributeValue &value)
 ApplicationContainer
 PacketSinkHelper::Install (Ptr<Node> node) const
 {
-  return ApplicationContainer (InstallPriv (node));
+  ApplicationContainer sourceApps = ApplicationContainer (InstallPriv (node));
+  Ptr<PacketSink> sinkptr = DynamicCast<PacketSink> (sourceApps.Get(0));
+  sinkptr->SetRequestParam(*param);
+  sinkptr->SetRespSize(resp_size);
+  delete param;
+  return sourceApps;
 }
 
 ApplicationContainer

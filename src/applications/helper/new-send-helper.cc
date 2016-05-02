@@ -29,14 +29,19 @@
 
 namespace ns3 {
 
-NewSendHelper::NewSendHelper (std::string protocol, Address addressS, Address addressD, uint32_t resp_size, uint32_t max_size)
+NewSendHelper::NewSendHelper (std::string protocol, Address addressS, Address addressD, uint32_t resp_size, uint32_t max_size, request_param_t param)
 {
+  secondaryRequestCounter = param.secondaryRequestCounter;
+  consecPageCounter = param.consecPageCounter;
+  func = param.func;
   m_factory.SetTypeId ("ns3::NewSendApplication");
   m_factory.Set ("Protocol", StringValue (protocol));
   m_factory.Set ("Remote", AddressValue (addressD));
   m_factory.Set ("Local", AddressValue (addressS));
   m_factory.Set ("RecvBytes", UintegerValue(resp_size));
   m_factory.Set ("MaxBytes", UintegerValue(max_size));
+  m_factory.Set("ReqType", UintegerValue(param.type));
+  m_factory.Set("BrowserNum", UintegerValue(param.browserNum));
 }
 
 void
@@ -48,7 +53,12 @@ NewSendHelper::SetAttribute (std::string name, const AttributeValue &value)
 ApplicationContainer
 NewSendHelper::Install (Ptr<Node> node) const
 {
-  return ApplicationContainer (InstallPriv (node));
+  ApplicationContainer sourceApps = ApplicationContainer (InstallPriv (node));
+  Ptr<NewSendApplication> sendptr = DynamicCast<NewSendApplication> (sourceApps.Get(0));
+  sendptr->SetConsecPageCounter(consecPageCounter);
+  sendptr->SetSecondaryRequestCounter(secondaryRequestCounter);
+  sendptr->SetFunction(func);
+  return sourceApps;
 }
 
 ApplicationContainer
