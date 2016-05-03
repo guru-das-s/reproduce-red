@@ -24,11 +24,11 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TuningRed");
 
 
-<<<<<<< HEAD
-uint32_t maxNodes = 1;
-=======
+//<<<<<<< HEAD
+//uint32_t maxNodes = 1;
+//=======
 uint32_t maxNodes = 49;
->>>>>>> custom
+//>>>>>>> custom
 
 typedef struct used_address
 {
@@ -154,7 +154,7 @@ void populate_cdf_data(std::ifstream& file, std::set<cdfentry_t, classcomp>& cdf
       entry.size_value = std::stoi(line.substr(sz+1));
       cdfset.insert(entry);
     }
-    std::cout<<"\n";
+    //std::cout<<"\n";
     file.close();
   }
 }
@@ -168,13 +168,13 @@ std::vector<uint32_t> populate_delays(std::ifstream& file)
   {
     while ( std::getline (file, line) )
     {
-      std::cout << line << '\n';
+      //std::cout << line << '\n';
       std::istringstream iss(line);
       uint32_t n;
       iss>>n;
       delays.push_back(n);
     }
-    std::cout<<"\n";
+    //std::cout<<"\n";
     file.close();
   }
   return delays;
@@ -374,6 +374,19 @@ void checkSecondaryComplete(request_param_t param)
 
 int main (int argc, char *argv[])
 {
+  CommandLine cmd;
+  int numUsers = 1;
+  int queueType = 1; // Red 1, Droptail - 0
+  double minTh = 30;
+  double maxTh = 90;
+  uint32_t qlen = 480;
+
+  cmd.AddValue("numUsers", "Number of users", numUsers);
+  cmd.AddValue("queuetype", "Set Queue type to Droptail <0> or RED <1>", queueType);
+  cmd.AddValue ("redMinTh", "RED queue minimum threshold", minTh);
+  cmd.AddValue ("redMaxTh", "RED queue maximum threshold", maxTh);
+  cmd.AddValue("qlen", "Queue limit in packets", qlen);
+  cmd.Parse (argc,argv);
   RngSeedManager::SetSeed (11223344);
   uv = CreateObject<UniformRandomVariable> ();
   uv->SetAttribute("Stream", IntegerValue(6110));
@@ -421,10 +434,27 @@ int main (int argc, char *argv[])
     serverInterfaces[i] = iface2.GetAddress(1);
   }
 
-  link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+  link.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   link.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NodeContainer midLink = NodeContainer(routers.Get(0),routers.Get(1));
   netDevice = link.Install(midLink);
+
+  if(queueType == 0)
+  {
+    Config::SetDefault ("ns3::DropTailQueue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+    Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (qlen));
+    link.SetQueue ("ns3::DropTailQueue");
+  }
+  else if(queueType == 1)
+  {
+    Config::SetDefault ("ns3::RedQueue::Mode", StringValue ("QUEUE_MODE_PACKETS"));
+    Config::SetDefault ("ns3::RedQueue::QueueLimit", UintegerValue (qlen));
+    link.SetQueue ("ns3::RedQueue",
+                        "MinTh", DoubleValue (minTh),
+                        "MaxTh", DoubleValue (maxTh),
+                        "LinkBandwidth", StringValue ("10Mbps"),
+                        "LinkDelay", StringValue ("2ms"));
+  }
 
   ipv4.SetBase("10.3.1.0", "255.255.255.0");
   ipv4.Assign(netDevice);
@@ -437,26 +467,25 @@ int main (int argc, char *argv[])
   for(uint32_t i = 0; i < maxNodes; i++)  {
     sinkApps.Add(sink.Install(servers.Get(i)));
   } 
-
   for(uint32_t browserNum = 0; browserNum < maxNodes; browserNum++)
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < numUsers; i++)
       Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,10)), &User, browserNum);
 
   Simulator::Stop(Seconds(2000));
   Simulator::Run ();
   Simulator::Destroy ();
-  std::cout<<"Sim ended\n";
+  //std::cout<<"Sim ended\n";
 
   uint32_t total = 0;
   for(uint32_t i = 0; i < maxNodes; i++) {
     Ptr<NewPacketSink> sinkptr = DynamicCast<NewPacketSink> (sinkApps.Get(i));
     total = total + sinkptr->GetTotalRx ();
   }
-  std::cout<<"Total data received at browsers: "<<browserRx<<std::endl;
+  //std::cout<<"Total data received at browsers: "<<browserRx<<std::endl;
   std::cout<<"Load generated: "<<(browserRx+total)*8/2000<<" bps"<<std::endl;
   std::cout<<"Number of response times recorded: "<<responseTimes.size()<<std::endl;
 
-  // for (int ind=0; ind<responseTimes.size(); ind++)
-  //   std::cout<<"Response time #"<<ind<<": "<<responseTimes[ind]<<"\n";
+  for (int ind=0; ind<responseTimes.size(); ind++)
+     std::cout<<responseTimes[ind]<<"\n";
   
 }
