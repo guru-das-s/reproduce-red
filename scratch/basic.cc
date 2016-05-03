@@ -382,6 +382,7 @@ int main (int argc, char *argv[])
   uint32_t qlen = 480;
   double qw = 0.002;
   double maxp = 10;
+  std::string bottleneck = "100Mbps";
 
   cmd.AddValue("numUsers", "Number of users", numUsers);
   cmd.AddValue("queuetype", "Set Queue type to Droptail <0> or RED <1>", queueType);
@@ -390,6 +391,7 @@ int main (int argc, char *argv[])
   cmd.AddValue("qlen", "Queue limit in packets", qlen);
   cmd.AddValue("qw", "Queue weight related to the exponential weighted moving average", qw);
   cmd.AddValue("maxp", "Max probability of dropping a packet", maxp);
+  cmd.AddValue("bottleneck", "Bottleneck bandwidth", bottleneck);
   cmd.Parse (argc,argv);
   RngSeedManager::SetSeed (11223344);
   uv = CreateObject<UniformRandomVariable> ();
@@ -455,7 +457,7 @@ int main (int argc, char *argv[])
                         "QW", DoubleValue(qw),
                         "LInterm", DoubleValue(maxp));
   }
-  link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+  link.SetDeviceAttribute ("DataRate", StringValue (bottleneck));
   link.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NodeContainer midLink = NodeContainer(routers.Get(0),routers.Get(1));
   netDevice = link.Install(midLink);
