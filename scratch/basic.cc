@@ -24,7 +24,11 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TuningRed");
 
 
+<<<<<<< HEAD
 uint32_t maxNodes = 1;
+=======
+uint32_t maxNodes = 49;
+>>>>>>> custom
 
 typedef struct used_address
 {
@@ -154,6 +158,28 @@ void populate_cdf_data(std::ifstream& file, std::set<cdfentry_t, classcomp>& cdf
     file.close();
   }
 }
+
+std::vector<uint32_t> populate_delays(std::ifstream& file)
+{
+  std::string line;
+  std::vector<uint32_t> delays;
+
+  if (file.is_open())
+  {
+    while ( std::getline (file, line) )
+    {
+      std::cout << line << '\n';
+      std::istringstream iss(line);
+      uint32_t n;
+      iss>>n;
+      delays.push_back(n);
+    }
+    std::cout<<"\n";
+    file.close();
+  }
+  return delays;
+}
+
 
 int get_size(std::set<cdfentry_t, classcomp>& cdfset, float probval)
 {
@@ -353,6 +379,8 @@ int main (int argc, char *argv[])
   uv->SetAttribute("Stream", IntegerValue(6110));
 
   initDistributions();
+  std::ifstream delay_file("cdf_data/delays.txt");
+  std::vector<uint32_t> delays = populate_delays(delay_file);
   browsers.Create(maxNodes);
   servers.Create(maxNodes);
   NodeContainer routers;
@@ -369,7 +397,9 @@ int main (int argc, char *argv[])
   Ipv4AddressHelper ipv4;
   for(uint32_t i = 0; i < maxNodes; i++)  {
     link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
-    link.SetChannelAttribute ("Delay", StringValue ("13ms"));
+    std::ostringstream delay;
+    delay << delays[i]<<"ms";
+    link.SetChannelAttribute ("Delay", StringValue (delay.str()));
     NodeContainer leftLink = NodeContainer(browsers.Get(i), routers.Get(0));
     netDevice = link.Install(leftLink);
 
@@ -380,7 +410,7 @@ int main (int argc, char *argv[])
     browserInterfaces[i] = iface.GetAddress(0);
 
     link2.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
-    link2.SetChannelAttribute ("Delay", StringValue ("13ms"));
+    link2.SetChannelAttribute ("Delay", StringValue ("1ms"));
     NodeContainer rightLink = NodeContainer (routers.Get(1), servers.Get(i));
     netDevice2 = link2.Install(rightLink);
     
@@ -392,7 +422,7 @@ int main (int argc, char *argv[])
   }
 
   link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
-  link.SetChannelAttribute ("Delay", StringValue ("13ms"));
+  link.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NodeContainer midLink = NodeContainer(routers.Get(0),routers.Get(1));
   netDevice = link.Install(midLink);
 
@@ -412,7 +442,7 @@ int main (int argc, char *argv[])
     for(int i = 0; i < 10; i++)
       Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,10)), &User, browserNum);
 
-  Simulator::Stop(Seconds(3000));
+  Simulator::Stop(Seconds(2000));
   Simulator::Run ();
   Simulator::Destroy ();
   std::cout<<"Sim ended\n";
@@ -423,7 +453,7 @@ int main (int argc, char *argv[])
     total = total + sinkptr->GetTotalRx ();
   }
   std::cout<<"Total data received at browsers: "<<browserRx<<std::endl;
-  std::cout<<"Load generated: "<<(browserRx+total)*8/1000<<" bps"<<std::endl;
+  std::cout<<"Load generated: "<<(browserRx+total)*8/2000<<" bps"<<std::endl;
   std::cout<<"Number of response times recorded: "<<responseTimes.size()<<std::endl;
 
   // for (int ind=0; ind<responseTimes.size(); ind++)
