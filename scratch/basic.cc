@@ -24,7 +24,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TuningRed");
 
 
-uint32_t maxNodes = 7;
+uint32_t maxNodes = 49;
 
 typedef struct used_address
 {
@@ -154,6 +154,28 @@ void populate_cdf_data(std::ifstream& file, std::set<cdfentry_t, classcomp>& cdf
     file.close();
   }
 }
+
+std::vector<uint32_t> populate_delays(std::ifstream& file)
+{
+  std::string line;
+  std::vector<uint32_t> delays;
+
+  if (file.is_open())
+  {
+    while ( std::getline (file, line) )
+    {
+      std::cout << line << '\n';
+      std::istringstream iss(line);
+      uint32_t n;
+      iss>>n;
+      delays.push_back(n);
+    }
+    std::cout<<"\n";
+    file.close();
+  }
+  return delays;
+}
+
 
 int get_size(std::set<cdfentry_t, classcomp>& cdfset, float probval)
 {
@@ -353,25 +375,59 @@ int main (int argc, char *argv[])
   uv->SetAttribute("Stream", IntegerValue(6110));
 
   initDistributions();
-
+  std::ifstream delay_file("cdf_data/delays.txt");
+  std::vector<uint32_t> delays = populate_delays(delay_file);
+  browsers.Create(maxNodes);
+  servers.Create(maxNodes);
+  NodeContainer routers;
+  routers.Create(2);
   PointToPointHelper link;
-  link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
-  link.SetChannelAttribute ("Delay", StringValue ("13ms"));
   PointToPointHelper link2;
-  link2.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
-  link2.SetChannelAttribute ("Delay", StringValue ("13ms"));
 
-  PointToPointDumbbellHelper dumbbell (maxNodes, link, maxNodes, link, link2);
-  InternetStackHelper stack;
-  dumbbell.InstallStack (stack);
-
+  InternetStackHelper stack; 
+  stack.Install(browsers);
+  stack.Install(servers);
+  stack.Install(routers);
+  NetDeviceContainer netDevice;
+  NetDeviceContainer netDevice2;
+  Ipv4AddressHelper ipv4;
   for(uint32_t i = 0; i < maxNodes; i++)  {
-    browsers.Add(dumbbell.GetLeft(i));
-    servers.Add(dumbbell.GetRight(i));
+    link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+    std::ostringstream delay;
+    delay << delays[i]<<"ms";
+    link.SetChannelAttribute ("Delay", StringValue (delay.str()));
+    
+    //std::cout<<"Delay:"<<delays[i]<<"\n";
+
+    NodeContainer leftLink = NodeContainer(browsers.Get(i), routers.Get(0));
+    netDevice = link.Install(leftLink);
+
+    std::ostringstream subnet;
+    subnet << "10.1." << i+1 << ".0";
+    ipv4.SetBase(subnet.str().c_str(), "255.255.255.0"); 
+    Ipv4InterfaceContainer iface = ipv4.Assign(netDevice);
+    browserInterfaces[i] = iface.GetAddress(0);
+
+    link2.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+    link2.SetChannelAttribute ("Delay", StringValue ("1ms"));
+    NodeContainer rightLink = NodeContainer (routers.Get(1), servers.Get(i));
+    netDevice2 = link2.Install(rightLink);
+    
+    std::ostringstream subnet2;
+    subnet2 << "10.2." << i+1 << ".0";
+    ipv4.SetBase(subnet2.str().c_str(), "255.255.255.0");
+    Ipv4InterfaceContainer iface2 = ipv4.Assign(netDevice2);
+    serverInterfaces[i] = iface2.GetAddress(1);
   }
-  dumbbell.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.1.0", "255.255.255.0"),
-                            Ipv4AddressHelper ("10.2.1.0", "255.255.255.0"),
-                            Ipv4AddressHelper ("10.3.1.0", "255.255.255.0"));
+
+  link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+  link.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  NodeContainer midLink = NodeContainer(routers.Get(0),routers.Get(1));
+  netDevice = link.Install(midLink);
+
+  ipv4.SetBase("10.3.1.0", "255.255.255.0");
+  ipv4.Assign(netDevice);
+
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   uint16_t port = 5000;
   ApplicationContainer sinkApps;
@@ -379,18 +435,13 @@ int main (int argc, char *argv[])
                           InetSocketAddress (Ipv4Address::GetAny (), port));
   for(uint32_t i = 0; i < maxNodes; i++)  {
     sinkApps.Add(sink.Install(servers.Get(i)));
-    browserInterfaces[i] = dumbbell.GetLeftIpv4Address(i);
-    serverInterfaces[i] = dumbbell.GetRightIpv4Address(i);
   } 
-  std::cout<<"Installed apps "<<std::endl;
-
-  Ptr<NewPacketSink> sinkptr = DynamicCast<NewPacketSink> (sinkApps.Get(0));
 
   for(uint32_t browserNum = 0; browserNum < maxNodes; browserNum++)
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < 10; i++)
       Simulator::Schedule(Seconds(10.0 + uv->GetValue(0,10)), &User, browserNum);
 
-  Simulator::Stop(Seconds(3000));
+  Simulator::Stop(Seconds(2000));
   Simulator::Run ();
   Simulator::Destroy ();
   std::cout<<"Sim ended\n";
@@ -401,7 +452,7 @@ int main (int argc, char *argv[])
     total = total + sinkptr->GetTotalRx ();
   }
   std::cout<<"Total data received at browsers: "<<browserRx<<std::endl;
-  std::cout<<"Load generated: "<<(browserRx+total)*8/1000<<" bps"<<std::endl;
+  std::cout<<"Load generated: "<<(browserRx+total)*8/2000<<" bps"<<std::endl;
   std::cout<<"Number of response times recorded: "<<responseTimes.size()<<std::endl;
 
   // for (int ind=0; ind<responseTimes.size(); ind++)
