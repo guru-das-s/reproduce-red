@@ -438,10 +438,6 @@ int main (int argc, char *argv[])
     serverInterfaces[i] = iface2.GetAddress(1);
   }
 
-  link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
-  link.SetChannelAttribute ("Delay", StringValue ("2ms"));
-  NodeContainer midLink = NodeContainer(routers.Get(0),routers.Get(1));
-  netDevice = link.Install(midLink);
 
   if(queueType == 0)
   {
@@ -457,10 +453,13 @@ int main (int argc, char *argv[])
                         "MinTh", DoubleValue (minTh),
                         "MaxTh", DoubleValue (maxTh),
                         "QW", DoubleValue(qw),
-                        "LInterm", DoubleValue(maxp),
-                        "LinkBandwidth", StringValue ("100Mbps"),
-                        "LinkDelay", StringValue ("2ms"));
+                        "LInterm", DoubleValue(maxp));
   }
+  link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+  link.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  NodeContainer midLink = NodeContainer(routers.Get(0),routers.Get(1));
+  netDevice = link.Install(midLink);
+
 
   ipv4.SetBase("10.3.1.0", "255.255.255.0");
   ipv4.Assign(netDevice);
