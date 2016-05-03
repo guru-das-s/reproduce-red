@@ -380,12 +380,16 @@ int main (int argc, char *argv[])
   double minTh = 30;
   double maxTh = 90;
   uint32_t qlen = 480;
+  double qw = 0.002;
+  double maxp = 10;
 
   cmd.AddValue("numUsers", "Number of users", numUsers);
   cmd.AddValue("queuetype", "Set Queue type to Droptail <0> or RED <1>", queueType);
   cmd.AddValue ("redMinTh", "RED queue minimum threshold", minTh);
   cmd.AddValue ("redMaxTh", "RED queue maximum threshold", maxTh);
   cmd.AddValue("qlen", "Queue limit in packets", qlen);
+  cmd.AddValue("qw", "Queue weight related to the exponential weighted moving average", qw);
+  cmd.AddValue("maxp", "Max probability of dropping a packet", maxp);
   cmd.Parse (argc,argv);
   RngSeedManager::SetSeed (11223344);
   uv = CreateObject<UniformRandomVariable> ();
@@ -434,7 +438,7 @@ int main (int argc, char *argv[])
     serverInterfaces[i] = iface2.GetAddress(1);
   }
 
-  link.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
+  link.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
   link.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NodeContainer midLink = NodeContainer(routers.Get(0),routers.Get(1));
   netDevice = link.Install(midLink);
@@ -452,7 +456,9 @@ int main (int argc, char *argv[])
     link.SetQueue ("ns3::RedQueue",
                         "MinTh", DoubleValue (minTh),
                         "MaxTh", DoubleValue (maxTh),
-                        "LinkBandwidth", StringValue ("10Mbps"),
+                        "QW", DoubleValue(qw),
+                        "LInterm", DoubleValue(maxp),
+                        "LinkBandwidth", StringValue ("100Mbps"),
                         "LinkDelay", StringValue ("2ms"));
   }
 
